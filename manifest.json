@@ -1,0 +1,17 @@
+{
+  "name": "ติดตามสถานะการส่งงานวิชาศิลปะ",
+  "short_name": "งานศิลปะ",
+  "description": "ระบบติดตามสถานะการส่งงานวิชาศิลปะ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdf2f8",
+  "theme_color": "#f472b6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/google/material-design-icons/master/png/action/art_track/materialicons/48dp/2x/baseline_art_track_black_48dp.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
