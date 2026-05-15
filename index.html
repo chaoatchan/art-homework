@@ -836,8 +836,15 @@ body {
 
     <!-- Sheets -->
     <div class="atab-content" id="atab-sheets">
-      <div id="sheetList"></div>
-      <div style="font-size:0.78rem;color:var(--gray-400);margin-top:8px">หมายเหตุ: การเพิ่ม/ลบ Sheet ทำได้ใน Google Sheets โดยตรง ระบบจะ Auto-detect อัตโนมัติ</div>
+      <p style="font-size:0.85rem;color:var(--gray-500);margin-bottom:12px">เลือกห้องเรียน แล้วกำหนดว่าจะแสดงชิ้นงานไหนให้นักเรียนเห็น</p>
+      <div style="margin-bottom:12px">
+        <select id="hideSheetSelect" class="config-select" style="width:100%25" onchange="renderHideWorks()">
+          <option value="">-- เลือกห้องเรียน --</option>
+        </select>
+      </div>
+      <div id="hideWorksList"></div>
+      <div id="hideWorksNote" style="font-size:0.78rem;color:var(--gray-400);margin-top:6px"></div>
+      <button class="btn-save" id="btnSaveHidden" onclick="saveHiddenWorks()" style="display:none">💾 บันทึกการแสดง/ซ่อน</button>
     </div>
 
     <!-- Rename -->
@@ -896,7 +903,7 @@ body {
 // ============================================================
 //  CONFIG — แก้ตรงนี้หลัง Deploy Apps Script
 // ============================================================
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzbTQm3SxEKrW2iAJrRF8strpPRh2z5KZHxesJJe8z5cqmHI5nf2GGRxfSp1FiseDGq2g/exec'; // ← วาง URL ที่ได้จาก Deploy
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcXlovVAo1fIrbk-0u4_fxo5Ix2MdZHhToLja8ZDRgFCoe8q4UzFNwfSF92JVBdyYDLA/exec'; // ← วาง URL ที่ได้จาก Deploy
 
 // ============================================================
 //  LOCALSTORAGE KEYS
@@ -1596,3 +1603,106 @@ function showToast(msg) {
 </script>
 </body>
 </html>
+<script>
+// ===== PATCH: Hide/Show works per sheet (Admin) =====
+function renderHideWorks() {
+  const sheetName = document.getElementById('hideSheetSelect').value;
+  const el = document.getElementById('hideWorksList');
+  const note = document.getElementById('hideWorksNote');
+  const btn = document.getElementById('btnSaveHidden');
+  if (!sheetName) { el.innerHTML = ''; note.textContent = ''; btn.style.display='none'; return; }
+
+  const sheetData = sheetsInfo.find(s => s.sheetName === sheetName);
+  if (!sheetData || !sheetData.headers || sheetData.headers.length === 0) {
+    el.innerHTML = '<div style="color:var(--gray-400);font-size:0.85rem">ไม่พบชิ้นงาน</div>';
+    return;
+  }
+
+  const hiddenList = sheetData.hiddenWorks || [];
+  const renames = getLS(LS.RENAMES, {});
+
+  el.innerHTML = sheetData.headers.map(h => {
+    const isHidden = hiddenList.includes(h);
+    const display = renames[h] || h;
+    return `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:white;border-radius:10px;margin-bottom:7px;border:1.5px solid ${isHidden ? '#fca5a5' : '#bbf7d0'};box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+        <label style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer">
+          <input type="checkbox" class="hide-work-cb" data-work="${esc(h)}"
+            ${isHidden ? '' : 'checked'}
+            style="width:18px;height:18px;accent-color:#ec4899;cursor:pointer">
+          <span style="font-size:0.9rem;font-weight:500">${esc(display)}</span>
+        </label>
+        <span style="font-size:0.75rem;font-weight:600;padding:2px 10px;border-radius:20px;background:${isHidden ? '#fee2e2' : '#dcfce7'};color:${isHidden ? '#dc2626' : '#16a34a'}">
+          ${isHidden ? '🙈 ซ่อน' : '👁️ แสดง'}
+        </span>
+      </div>`;
+  }).join('');
+
+  note.textContent = `✅ แสดง = นักเรียนเห็น  🙈 ซ่อน = ไม่แสดงในแดชบอร์ด`;
+  btn.style.display = 'block';
+
+  // อัปเดต badge สี real-time เมื่อ toggle
+  el.querySelectorAll('.hide-work-cb').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const row = cb.closest('div');
+      const badge = row.querySelector('span:last-child');
+      if (cb.checked) {
+        row.style.borderColor = '#bbf7d0';
+        badge.style.background = '#dcfce7';
+        badge.style.color = '#16a34a';
+        badge.textContent = '👁️ แสดง';
+      } else {
+        row.style.borderColor = '#fca5a5';
+        badge.style.background = '#fee2e2';
+        badge.style.color = '#dc2626';
+        badge.textContent = '🙈 ซ่อน';
+      }
+    });
+  });
+}
+
+async function saveHiddenWorks() {
+  const sheetName = document.getElementById('hideSheetSelect').value;
+  if (!sheetName) return;
+
+  // checkbox ที่ไม่ได้ check = ซ่อน
+  const hiddenWorks = [];
+  document.querySelectorAll('.hide-work-cb').forEach(cb => {
+    if (!cb.checked) hiddenWorks.push(cb.getAttribute('data-work'));
+  });
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'saveHidden', sheetName, hiddenWorks }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      // อัปเดต local sheetsInfo ด้วย
+      const s = sheetsInfo.find(x => x.sheetName === sheetName);
+      if (s) s.hiddenWorks = hiddenWorks;
+      showToast('✅ บันทึกการแสดง/ซ่อนแล้ว');
+    } else {
+      showToast('⚠️ ' + (data.error || 'บันทึกไม่สำเร็จ'));
+    }
+  } catch (err) {
+    showToast('⚠️ ' + err.message);
+  }
+}
+
+// ===== PATCH: เพิ่ม hideSheetSelect ใน populateAdminSelects =====
+const _origPopulate = populateAdminSelects;
+populateAdminSelects = function() {
+  _origPopulate();
+  const sel = document.getElementById('hideSheetSelect');
+  if (sel) {
+    sel.innerHTML = '<option value="">-- เลือกห้องเรียน --</option>';
+    sheetsInfo.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.sheetName;
+      opt.textContent = s.sheetName + ' (' + s.studentCount + ' คน)';
+      sel.appendChild(opt);
+    });
+  }
+};
+</script>
