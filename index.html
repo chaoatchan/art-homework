@@ -813,6 +813,7 @@ body {
       <button class="atab" onclick="showAdminTab('deadline',this)">📅 Deadline</button>
       <button class="atab" onclick="showAdminTab('announce',this)">📢 ประกาศ</button>
       <button class="atab" onclick="showAdminTab('missing',this)">❌ ค้างส่ง</button>
+      <button class="atab" onclick="showAdminTab('addsheets',this)">➕ เพิ่ม Sheets</button>
     </div>
 
     <!-- Stats -->
@@ -878,6 +879,18 @@ body {
       <button class="btn-save" onclick="exportMissingCSV()" style="margin-top:10px">⬇️ Export CSV</button>
     </div>
 
+    <!-- Add Sheets -->
+    <div class="atab-content" id="atab-addsheets">
+      <p style="font-size:0.85rem;color:var(--gray-500);margin-bottom:12px">เพิ่ม Google Sheets ของระดับชั้นอื่นได้เลย ระบบจะค้นหาข้ามทุก Spreadsheet</p>
+      <div id="extraSheetsList"></div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <input class="config-input" id="newSheetLabel" placeholder="ชื่อ เช่น ม.1, ม.2" style="flex:1">
+        <input class="config-input" id="newSheetUrl" placeholder="URL หรือ Spreadsheet ID" style="flex:2">
+      </div>
+      <button class="btn-save" onclick="addExtraSheet()" style="margin-top:8px">➕ เพิ่ม Spreadsheet</button>
+      <div style="font-size:0.78rem;color:var(--gray-400);margin-top:8px">หมายเหตุ: Spreadsheet ที่เพิ่มต้องเปิด Public (Anyone with link) และต้องติดตั้ง Code.gs ด้วย</div>
+    </div>
+
   </div><!-- /adminPanel -->
 
 </div><!-- /container -->
@@ -903,7 +916,7 @@ body {
 // ============================================================
 //  CONFIG — แก้ตรงนี้หลัง Deploy Apps Script
 // ============================================================
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcXlovVAo1fIrbk-0u4_fxo5Ix2MdZHhToLja8ZDRgFCoe8q4UzFNwfSF92JVBdyYDLA/exec'; // ← วาง URL ที่ได้จาก Deploy
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyjYA9KX4bR__RMky6xUkJ88JLxpX5crtxxWMlLBVMN3df0Djg5j52-fcIGwPswGdqkJw/exec'; // ← วาง URL ที่ได้จาก Deploy
 
 // ============================================================
 //  LOCALSTORAGE KEYS
@@ -1024,8 +1037,8 @@ function showConfirmModal(students) {
   // ถ้ามีหลาย match ให้ดูทีละคน
   const s = students[0];
   document.getElementById('modalName').textContent = s.name || '(ไม่ระบุชื่อ)';
-  document.getElementById('modalMeta').textContent = `รหัส: ${s.id}  ·  ห้อง: ${s.sheet}`;
-  document.getElementById('modalAvatar').textContent = getAvatar(s.name);
+  document.getElementById('modalMeta').textContent = `รหัส: ${s.id}  ·  ห้อง: ${formatClass(s.sheet)}`;
+  document.getElementById('modalAvatar').textContent = getAvatar(s.name, s.prefix);
   document.getElementById('confirmModal').classList.add('show');
 }
 
@@ -1051,8 +1064,8 @@ function renderStudent(s) {
   // Student info
   document.getElementById('stuName').textContent = s.name || '-';
   document.getElementById('stuId').textContent   = `รหัส: ${s.id}`;
-  document.getElementById('stuClass').textContent= `ห้อง: ${s.sheet}`;
-  document.getElementById('stuHeader').querySelector('.stu-avatar').textContent = getAvatar(s.name);
+  document.getElementById('stuClass').textContent= `ห้อง: ${formatClass(s.sheet)}`;
+  document.getElementById('stuHeader').querySelector('.stu-avatar').textContent = getAvatar(s.name, s.prefix);
 
   const works = s.works || [];
   let done = 0, miss = 0;
@@ -1579,10 +1592,21 @@ function getDeadlineInfo(dateStr) {
   } catch (e) { return null; }
 }
 
-function getAvatar(name) {
-  const avatars = ['👧', '👦', '🧑', '👩', '🙋'];
-  if (!name) return '👤';
-  return avatars[name.charCodeAt(0) % avatars.length];
+function getAvatar(name, prefix) {
+
+
+  const p = (prefix || '').trim();
+  if (/เด็กชาย/.test(p)) return '👦';
+  if (/เด็กหญิง|นางสาว|นาง/.test(p)) return '👧';
+  return '🧑';
+}
+
+function formatClass(name) {
+  // แปลง 301->3/1, 3001->3/1, m301->3/1 ฯลฯ
+  if (!name) return name;
+  const m = name.match(/^[mMมม]?(d)(d{2})$/);
+  if (m) return m[1] + '/' + parseInt(m[2]);
+  return name;
 }
 
 function esc(str) {
@@ -1704,5 +1728,137 @@ populateAdminSelects = function() {
       sel.appendChild(opt);
     });
   }
+};
+</script>
+<script>
+// ===== PATCH: Multi-Spreadsheet Support =====
+const LS_EXTRA_SHEETS = 'art_extra_sheets';
+
+function getExtraSheets() {
+  return getLS(LS_EXTRA_SHEETS, []);
+  // format: [{ label: 'ม.1', url: 'https://script.google.com/...' }]
+}
+
+function extractScriptUrl(input) {
+  input = input.trim();
+  // ถ้าเป็น URL ของ Apps Script อยู่แล้ว
+  if (input.includes('script.google.com/macros')) return input;
+  // ถ้าเป็น Spreadsheet URL → แจ้งว่าต้องใช้ Apps Script URL
+  return input;
+}
+
+function addExtraSheet() {
+  const label = document.getElementById('newSheetLabel').value.trim();
+  const url   = document.getElementById('newSheetUrl').value.trim();
+  if (!label || !url) { showToast('⚠️ กรุณากรอกชื่อและ URL ให้ครบ'); return; }
+
+  const scriptUrl = extractScriptUrl(url);
+  if (!scriptUrl.includes('script.google.com')) {
+    showToast('⚠️ ต้องใช้ Apps Script URL (จาก Deploy) ไม่ใช่ URL ของ Sheets');
+    return;
+  }
+
+  const list = getExtraSheets();
+  // เช็คซ้ำ
+  if (list.find(s => s.url === scriptUrl)) { showToast('⚠️ เพิ่มไปแล้ว'); return; }
+  list.push({ label, url: scriptUrl });
+  localStorage.setItem(LS_EXTRA_SHEETS, JSON.stringify(list));
+  document.getElementById('newSheetLabel').value = '';
+  document.getElementById('newSheetUrl').value = '';
+  renderExtraSheets();
+  showToast('✅ เพิ่ม ' + label + ' แล้ว');
+}
+
+function removeExtraSheet(idx) {
+  const list = getExtraSheets();
+  list.splice(idx, 1);
+  localStorage.setItem(LS_EXTRA_SHEETS, JSON.stringify(list));
+  renderExtraSheets();
+  showToast('🗑️ ลบแล้ว');
+}
+
+function renderExtraSheets() {
+  const el = document.getElementById('extraSheetsList');
+  if (!el) return;
+  const list = getExtraSheets();
+  if (list.length === 0) {
+    el.innerHTML = '<div style="color:var(--gray-400);font-size:0.85rem;padding:8px 0">ยังไม่มี Spreadsheet เพิ่มเติม</div>';
+    return;
+  }
+  el.innerHTML = list.map((s, i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--amber-100);border-radius:var(--r-sm);margin-bottom:8px">
+      <div style="flex:1">
+        <div style="font-weight:600;color:#92400e;font-size:0.9rem">${esc(s.label)}</div>
+        <div style="font-size:0.72rem;color:#b45309;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px">${esc(s.url)}</div>
+      </div>
+      <button onclick="removeExtraSheet(${i})" style="border:none;background:#fca5a5;color:#dc2626;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:0.8rem;font-weight:600">ลบ</button>
+    </div>`).join('');
+}
+
+// ===== PATCH: ค้นหาข้าม Spreadsheet หลายอัน =====
+const _origDoSearch = doSearch;
+doSearch = async function() {
+  const raw   = document.getElementById('searchInput').value;
+  const query = raw.trim();
+  if (!query) return;
+  if (query === 'nutdanaichanim') { enterAdmin(); return; }
+
+  hideError();
+  document.getElementById('resultArea').style.display = 'none';
+  document.getElementById('adminPanel').style.display = 'none';
+
+  const cacheKey = 'q_' + query;
+  const cached = getCache(cacheKey);
+  if (cached) { showCacheBanner(); showConfirmModal(cached); return; }
+
+  showLoading(true);
+  try {
+    // ค้นจาก Sheets หลัก
+    const mainData = await api({ action: 'search', q: query });
+    let allStudents = mainData.success ? mainData.students : [];
+
+    // ค้นจาก Extra Sheets
+    const extras = getExtraSheets();
+    for (const extra of extras) {
+      try {
+        const url = extra.url + '?action=search&q=' + encodeURIComponent(query);
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.success && data.students) {
+          // tag sheet name ด้วย label ของ extra
+          allStudents = allStudents.concat(data.students);
+        }
+      } catch (e) { /* ข้าม extra sheet ที่ error */ }
+    }
+
+    if (allStudents.length === 0) {
+      showError('ไม่พบรหัส/ชื่อ "' + query + '" ในระบบ');
+    } else {
+      setCache(cacheKey, allStudents);
+      showConfirmModal(allStudents);
+    }
+  } catch (e) { showError(e.message); }
+  showLoading(false);
+};
+
+// init extra sheets list เมื่อเปิด tab
+const _origShowAdminTab = showAdminTab;
+showAdminTab = function(tab, btn) {
+  _origShowAdminTab(tab, btn);
+  if (tab === 'addsheets') renderExtraSheets();
+};
+
+// แปลงชื่อห้องใน admin selects ด้วย
+const _origPopulateAdmin = populateAdminSelects;
+populateAdminSelects = function() {
+  _origPopulateAdmin();
+  // อัปเดต label ใน select ต่างๆ ให้แสดง 3/1 แทน 301
+  ['statsSheetSelect','missingSheetSelect','hideSheetSelect'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    Array.from(sel.options).forEach(opt => {
+      if (opt.value) opt.textContent = opt.textContent.replace(/(\d)(\d{2})(\s|$)/, (m,a,b,c) => a+'/'+parseInt(b)+c);
+    });
+  });
 };
 </script>
