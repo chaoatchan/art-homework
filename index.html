@@ -265,6 +265,25 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-text { color: var(--gray-400); font-size: 0.9rem; }
 
+/* ===== SKELETON SCREEN ===== */
+.skeleton { display: none; margin-bottom: 14px; }
+.skeleton-card { background: white; border-radius: var(--r-lg); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 10px; }
+.skel-line {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 8px;
+  height: 14px;
+  margin-bottom: 10px;
+}
+.skel-line.w60 { width: 60%; }
+.skel-line.w40 { width: 40%; }
+.skel-line.w80 { width: 80%; }
+.skel-line.h20 { height: 20px; margin-bottom: 14px; }
+.skel-avatar { width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; flex-shrink: 0; }
+.skel-row { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
 /* ===== ERROR ===== */
 .error-box {
   background: var(--red-50);
@@ -742,6 +761,24 @@ body {
     <div class="loading-text">กำลังโหลดข้อมูล...</div>
   </div>
 
+  <!-- Skeleton Screen -->
+  <div class="skeleton" id="skeletonBox">
+    <div class="skeleton-card">
+      <div class="skel-row">
+        <div class="skel-avatar"></div>
+        <div style="flex:1"><div class="skel-line w60 h20"></div><div class="skel-line w40"></div></div>
+      </div>
+    </div>
+    <div class="skeleton-card">
+      <div class="skel-line w40 h20"></div>
+      <div class="skel-line w80"></div>
+      <div class="skel-line w60"></div>
+    </div>
+    <div class="skeleton-card"><div class="skel-line w60"></div></div>
+    <div class="skeleton-card"><div class="skel-line w80"></div></div>
+    <div class="skeleton-card"><div class="skel-line w60"></div></div>
+  </div>
+
   <!-- Result -->
   <div id="resultArea">
 
@@ -824,6 +861,7 @@ body {
         </select>
       </div>
       <div id="statsContent"></div>
+      <button onclick="adminClearCache()" style="margin-top:10px;width:100%;padding:10px;background:#fef3c7;border:1.5px solid #fde68a;border-radius:10px;color:#92400e;font-family:Prompt,sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer">🗑️ ล้าง Cache ทั้งหมด (บังคับโหลดข้อมูลใหม่)</button>
     </div>
 
     <!-- Search -->
@@ -1861,4 +1899,63 @@ populateAdminSelects = function() {
     });
   });
 };
+</script>
+<script>
+// ===== PATCH v4: Skeleton + Debounce + Cache Clear =====
+
+// Skeleton Screen
+function showSkeleton(v) {
+  const sk = document.getElementById('skeletonBox');
+  const ld = document.getElementById('loadingBox');
+  if (v) {
+    sk.style.display = 'block';
+    ld.style.display = 'none';
+  } else {
+    sk.style.display = 'none';
+  }
+}
+
+// Override showLoading ให้ใช้ Skeleton แทน spinner
+const _origShowLoading = showLoading;
+showLoading = function(v) {
+  showSkeleton(v);
+  // spinner ซ่อนไว้ ใช้ skeleton แทน
+  document.getElementById('loadingBox').style.display = 'none';
+};
+
+// Debounce Search — รอ 500ms หลังหยุดพิมพ์
+let debounceTimer = null;
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('searchInput');
+  if (input) {
+    // ลบ onkeydown เดิมออก แล้วใช้ debounce แทน
+    input.removeAttribute('onkeydown');
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        clearTimeout(debounceTimer);
+        doSearch();
+      }
+    });
+    input.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      const val = input.value.trim();
+      if (val.length >= 4) { // เริ่มค้นหาเมื่อพิมพ์ครบ 4 ตัว
+        debounceTimer = setTimeout(() => doSearch(), 500);
+      }
+    });
+  }
+});
+
+// Admin: ปุ่ม Clear Cache ทั้งหมด
+async function adminClearCache() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=clearCache');
+    const data = await res.json();
+    // clear local cache ด้วย
+    Object.keys(localStorage).filter(k => k.startsWith('art_c_')).forEach(k => localStorage.removeItem(k));
+    showToast(data.success ? '🗑️ ล้าง Cache ทั้งหมดแล้ว ข้อมูลจะอัปเดตทันที' : '⚠️ ' + data.error);
+  } catch(e) {
+    showToast('⚠️ ' + e.message);
+  }
+}
 </script>
