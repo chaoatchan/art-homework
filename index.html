@@ -5,739 +5,256 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#f472b6">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="ติดตามงานศิลปะ">
 <link rel="manifest" href="manifest.json">
 <title>ติดตามสถานะการส่งงานวิชาศิลปะ</title>
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
 <style>
-/* ===== DESIGN TOKENS ===== */
 :root {
-  --pink-50:  #fdf2f8;
-  --pink-100: #fce7f3;
-  --pink-200: #fbcfe8;
-  --pink-300: #f9a8d4;
-  --pink-400: #f472b6;
-  --pink-500: #ec4899;
-  --pink-600: #db2777;
-  --rose-400: #fb7185;
-  --rose-500: #f43f5e;
-  --white:    #ffffff;
-  --gray-50:  #fafafa;
-  --gray-100: #f5f5f5;
-  --gray-200: #e5e5e5;
-  --gray-400: #a3a3a3;
-  --gray-500: #737373;
-  --gray-600: #525252;
-  --gray-800: #1a1a1a;
-  --green-50:  #f0fdf4;
-  --green-100: #dcfce7;
-  --green-500: #22c55e;
-  --green-600: #16a34a;
-  --red-50:   #fff1f2;
-  --red-100:  #ffe4e6;
-  --red-500:  #ef4444;
-  --red-600:  #dc2626;
-  --amber-100:#fef3c7;
-  --amber-400:#fbbf24;
-  --amber-600:#d97706;
-  --shadow-sm: 0 1px 4px rgba(236,72,153,0.08);
-  --shadow-md: 0 4px 20px rgba(236,72,153,0.12);
-  --shadow-lg: 0 12px 48px rgba(236,72,153,0.18);
-  --r-sm: 12px;
-  --r-md: 18px;
-  --r-lg: 24px;
+  --pink-50:#fdf2f8;--pink-100:#fce7f3;--pink-200:#fbcfe8;--pink-300:#f9a8d4;
+  --pink-400:#f472b6;--pink-500:#ec4899;--pink-600:#db2777;
+  --white:#ffffff;--gray-50:#fafafa;--gray-100:#f5f5f5;--gray-200:#e5e5e5;
+  --gray-400:#a3a3a3;--gray-500:#737373;--gray-600:#525252;--gray-800:#1a1a1a;
+  --green-100:#dcfce7;--green-500:#22c55e;--green-600:#16a34a;
+  --red-100:#ffe4e6;--red-500:#ef4444;--red-600:#dc2626;
+  --amber-100:#fef3c7;--amber-400:#fbbf24;--amber-600:#d97706;
+  --shadow-sm:0 1px 4px rgba(236,72,153,.08);
+  --shadow-md:0 4px 20px rgba(236,72,153,.12);
+  --shadow-lg:0 12px 48px rgba(236,72,153,.18);
+  --r-sm:12px;--r-md:18px;--r-lg:24px;
 }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Prompt',sans-serif;background:var(--pink-50);min-height:100vh;color:var(--gray-800);overflow-x:hidden}
 
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+/* HERO */
+.hero{background:linear-gradient(145deg,#f9a8d4 0%,#f472b6 45%,#db2777 100%);padding:48px 20px 72px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 50%,rgba(255,255,255,.15) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(255,255,255,.1) 0%,transparent 40%)}
+.hero-icon{font-size:2.8rem;margin-bottom:10px;position:relative;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hero-title{font-family:'Prompt',sans-serif;font-size:clamp(1.2rem,4vw,1.8rem);font-weight:700;color:white;text-shadow:0 2px 12px rgba(0,0,0,.15);position:relative;line-height:1.3}
+.hero-sub{font-size:.9rem;color:rgba(255,255,255,.82);margin-top:6px;position:relative}
 
-body {
-  font-family: 'Prompt', sans-serif;
-  background: var(--pink-50);
-  min-height: 100vh;
-  color: var(--gray-800);
-  overflow-x: hidden;
-}
+/* CONTAINER */
+.container{max-width:680px;margin:-44px auto 60px;padding:0 16px}
 
-/* ===== HEADER ===== */
-.hero {
-  background: linear-gradient(145deg, #f9a8d4 0%, #f472b6 45%, #db2777 100%);
-  padding: 48px 20px 72px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.hero::before {
-  content: '';
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(circle at 20% 50%, rgba(255,255,255,0.15) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 40%);
-}
-.hero-deco {
-  position: absolute;
-  font-size: 6rem;
-  opacity: 0.07;
-  pointer-events: none;
-}
-.hero-deco-1 { top: -20px; left: -10px; transform: rotate(-15deg); }
-.hero-deco-2 { bottom: -10px; right: -10px; transform: rotate(20deg); font-size: 5rem; }
-.hero-icon {
-  font-size: 2.8rem;
-  margin-bottom: 10px;
-  position: relative;
-  animation: float 3s ease-in-out infinite;
-}
-@keyframes float {
-  0%,100% { transform: translateY(0); }
-  50%      { transform: translateY(-6px); }
-}
-.hero-title {
-  font-family: 'Prompt', sans-serif;
-  font-size: clamp(1.3rem, 4vw, 1.8rem);
-  font-weight: 700;
-  color: white;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.15);
-  position: relative;
-  line-height: 1.3;
-}
-.hero-sub {
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.82);
-  margin-top: 6px;
-  position: relative;
-}
+/* CARD */
+.card{background:var(--white);border-radius:var(--r-lg);box-shadow:var(--shadow-md);padding:24px;margin-bottom:14px;border:1px solid rgba(244,114,182,.08);animation:slideUp .4s cubic-bezier(.22,1,.36,1) both}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-/* ===== ANNOUNCEMENT BANNER ===== */
-.announce-bar {
-  background: linear-gradient(90deg, #fce7f3, #fdf2f8);
-  border: 1px solid var(--pink-200);
-  border-radius: var(--r-sm);
-  padding: 12px 16px;
-  margin-bottom: 14px;
-  display: none;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 0.9rem;
-  color: var(--pink-600);
-}
-.announce-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+/* ANNOUNCE */
+.announce-bar{background:linear-gradient(90deg,#fce7f3,#fdf2f8);border:1px solid var(--pink-200);border-radius:var(--r-sm);padding:12px 16px;margin-bottom:14px;display:none;align-items:flex-start;gap:10px;font-size:.9rem;color:var(--pink-600)}
 
-/* ===== CONTAINER ===== */
-.container {
-  max-width: 660px;
-  margin: -44px auto 60px;
-  padding: 0 16px;
-}
+/* SEARCH */
+.search-label{font-size:.78rem;font-weight:600;color:var(--pink-500);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;display:block}
+.search-row{display:flex;gap:10px}
+.search-input{flex:1;padding:14px 18px;border:2px solid var(--pink-200);border-radius:var(--r-sm);font-size:1rem;font-family:'Prompt',sans-serif;background:var(--pink-50);outline:none;transition:all .2s;color:var(--gray-800);-webkit-appearance:none}
+.search-input:focus{border-color:var(--pink-400);background:white;box-shadow:0 0 0 4px rgba(244,114,182,.12)}
+.search-input::placeholder{color:var(--gray-400)}
+.btn-search{padding:14px 22px;background:linear-gradient(135deg,var(--pink-400),var(--pink-600));color:white;border:none;border-radius:var(--r-sm);font-family:'Prompt',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(236,72,153,.35);white-space:nowrap}
+.btn-search:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(236,72,153,.45)}
+.hint{font-size:.78rem;color:var(--gray-400);text-align:center;margin-top:8px}
 
-/* ===== CARD ===== */
-.card {
-  background: var(--white);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-md);
-  padding: 24px;
-  margin-bottom: 14px;
-  border: 1px solid rgba(244,114,182,0.08);
-  animation: slideUp 0.4s cubic-bezier(.22,1,.36,1) both;
-}
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+/* SKELETON */
+.skeleton{display:none;margin-bottom:14px}
+.skeleton-card{background:white;border-radius:var(--r-lg);padding:24px;box-shadow:var(--shadow-sm);margin-bottom:10px}
+.skel-line{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;height:14px;margin-bottom:10px}
+.skel-line.w60{width:60%}.skel-line.w40{width:40%}.skel-line.w80{width:80%}.skel-line.h20{height:20px;margin-bottom:14px}
+.skel-avatar{width:54px;height:54px;border-radius:50%;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;flex-shrink:0}
+.skel-row{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* ===== SEARCH ===== */
-.search-label {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--pink-500);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-  display: block;
-}
-.search-row { display: flex; gap: 10px; }
-.search-input {
-  flex: 1;
-  padding: 14px 18px;
-  border: 2px solid var(--pink-200);
-  border-radius: var(--r-sm);
-  font-size: 1rem;
-  font-family: 'Prompt', sans-serif;
-  background: var(--pink-50);
-  outline: none;
-  transition: all 0.2s;
-  color: var(--gray-800);
-  -webkit-appearance: none;
-}
-.search-input:focus {
-  border-color: var(--pink-400);
-  background: white;
-  box-shadow: 0 0 0 4px rgba(244,114,182,0.12);
-}
-.search-input::placeholder { color: var(--gray-400); }
-.btn-search {
-  padding: 14px 22px;
-  background: linear-gradient(135deg, var(--pink-400), var(--pink-600));
-  color: white;
-  border: none;
-  border-radius: var(--r-sm);
-  font-family: 'Prompt', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 14px rgba(236,72,153,0.35);
-  white-space: nowrap;
-}
-.btn-search:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(236,72,153,0.45); }
-.btn-search:active { transform: scale(0.97); }
-.hint { font-size: 0.78rem; color: var(--gray-400); text-align: center; margin-top: 8px; }
+/* LOADING */
+.loading{text-align:center;padding:40px 20px;display:none}
+.spinner{width:44px;height:44px;border:4px solid var(--pink-100);border-top-color:var(--pink-400);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{color:var(--gray-400);font-size:.9rem}
 
-/* ===== MODAL ===== */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.45);
-  backdrop-filter: blur(4px);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 100;
-  padding: 20px;
-  display: none;
-}
-.modal-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-.modal {
-  background: white;
-  border-radius: var(--r-lg);
-  padding: 32px 28px;
-  max-width: 360px;
-  width: 100%;
-  text-align: center;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.2);
-  animation: popIn 0.25s cubic-bezier(.34,1.56,.64,1);
-}
-@keyframes popIn {
-  from { transform: scale(0.85); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
-}
-.modal-avatar {
-  width: 72px; height: 72px;
-  background: linear-gradient(135deg, var(--pink-300), var(--pink-500));
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2rem;
-  margin: 0 auto 16px;
-  box-shadow: 0 8px 24px rgba(236,72,153,0.3);
-}
-.modal-title { font-size: 0.8rem; color: var(--gray-400); margin-bottom: 6px; font-weight: 500; }
-.modal-name { font-size: 1.3rem; font-weight: 700; color: var(--gray-800); margin-bottom: 4px; }
-.modal-meta { font-size: 0.85rem; color: var(--gray-500); margin-bottom: 24px; }
-.modal-btns { display: flex; gap: 10px; }
-.btn-confirm {
-  flex: 1; padding: 13px;
-  background: linear-gradient(135deg, var(--pink-400), var(--pink-600));
-  color: white; border: none; border-radius: var(--r-sm);
-  font-family: 'Prompt', sans-serif; font-size: 0.95rem; font-weight: 600;
-  cursor: pointer; transition: all 0.2s;
-  box-shadow: 0 4px 14px rgba(236,72,153,0.35);
-}
-.btn-confirm:hover { transform: translateY(-1px); }
-.btn-cancel {
-  flex: 1; padding: 13px;
-  background: var(--gray-100); color: var(--gray-600);
-  border: none; border-radius: var(--r-sm);
-  font-family: 'Prompt', sans-serif; font-size: 0.95rem; font-weight: 600;
-  cursor: pointer; transition: all 0.2s;
-}
-.btn-cancel:hover { background: var(--gray-200); }
+/* ERROR */
+.error-box{background:#fff1f2;border:1px solid #fca5a5;border-radius:var(--r-sm);padding:13px 16px;color:var(--red-600);font-size:.9rem;display:none;margin-top:12px}
 
-/* ===== LOADING ===== */
-.loading { text-align: center; padding: 40px 20px; display: none; }
-.spinner {
-  width: 44px; height: 44px;
-  border: 4px solid var(--pink-100);
-  border-top-color: var(--pink-400);
-  border-radius: 50%;
-  animation: spin 0.75s linear infinite;
-  margin: 0 auto 14px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { color: var(--gray-400); font-size: 0.9rem; }
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal-overlay.show{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:white;border-radius:var(--r-lg);padding:32px 28px;max-width:360px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.2);animation:popIn .25s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-avatar{width:72px;height:72px;background:linear-gradient(135deg,var(--pink-300),var(--pink-500));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 16px;box-shadow:0 8px 24px rgba(236,72,153,.3)}
+.modal-title{font-size:.8rem;color:var(--gray-400);margin-bottom:6px;font-weight:500}
+.modal-name{font-size:1.3rem;font-weight:700;color:var(--gray-800);margin-bottom:4px}
+.modal-meta{font-size:.85rem;color:var(--gray-500);margin-bottom:24px}
+.modal-btns{display:flex;gap:10px}
+.btn-confirm{flex:1;padding:13px;background:linear-gradient(135deg,var(--pink-400),var(--pink-600));color:white;border:none;border-radius:var(--r-sm);font-family:'Prompt',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(236,72,153,.35)}
+.btn-cancel{flex:1;padding:13px;background:var(--gray-100);color:var(--gray-600);border:none;border-radius:var(--r-sm);font-family:'Prompt',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-cancel:hover{background:var(--gray-200)}
 
-/* ===== SKELETON SCREEN ===== */
-.skeleton { display: none; margin-bottom: 14px; }
-.skeleton-card { background: white; border-radius: var(--r-lg); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 10px; }
-.skel-line {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.4s infinite;
-  border-radius: 8px;
-  height: 14px;
-  margin-bottom: 10px;
-}
-.skel-line.w60 { width: 60%; }
-.skel-line.w40 { width: 40%; }
-.skel-line.w80 { width: 80%; }
-.skel-line.h20 { height: 20px; margin-bottom: 14px; }
-.skel-avatar { width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; flex-shrink: 0; }
-.skel-row { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
-@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+/* STUDENT */
+.student-header{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,var(--pink-50),#fff5fb);border:1.5px solid var(--pink-200);border-radius:var(--r-md);padding:18px 20px;margin-bottom:14px}
+.stu-avatar{width:54px;height:54px;background:linear-gradient(135deg,var(--pink-300),var(--pink-500));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;box-shadow:0 4px 14px rgba(236,72,153,.3)}
+.stu-name{font-size:1.15rem;font-weight:700;color:var(--gray-800)}
+.stu-id{font-size:.82rem;color:var(--gray-400);margin-top:2px}
+.stu-class{display:inline-block;background:var(--pink-400);color:white;font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:20px;margin-top:5px}
 
-/* ===== ERROR ===== */
-.error-box {
-  background: var(--red-50);
-  border: 1px solid #fca5a5;
-  border-radius: var(--r-sm);
-  padding: 13px 16px;
-  color: var(--red-600);
-  font-size: 0.9rem;
-  display: none;
-  margin-top: 12px;
-  animation: slideUp 0.3s ease;
-}
+/* PROGRESS */
+.prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.prog-label{font-weight:600;font-size:.95rem}
+.prog-pct{font-size:1.8rem;font-weight:700;color:var(--pink-500);font-family:'Poppins',sans-serif}
+.prog-track{height:16px;background:var(--pink-100);border-radius:99px;overflow:hidden;margin-bottom:12px}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--pink-300),var(--pink-500));border-radius:99px;transition:width 1.2s cubic-bezier(.4,0,.2,1);position:relative}
+.prog-bar::after{content:'';position:absolute;right:0;top:0;bottom:0;width:28px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35))}
+.prog-chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:5px 14px;border-radius:99px;font-size:.82rem;font-weight:600;font-family:'Poppins',sans-serif}
+.chip.done{background:var(--green-100);color:var(--green-600)}
+.chip.miss{background:var(--red-100);color:var(--red-600)}
+.chip.total{background:var(--pink-100);color:var(--pink-600)}
+.motivate{margin-top:14px;padding:14px 18px;background:linear-gradient(135deg,#fdf2f8,#fce7f3);border:1px solid var(--pink-200);border-radius:var(--r-sm);font-size:.95rem;font-weight:500;color:var(--pink-600);text-align:center}
+.badges-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.badge{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#fdf2f8,white);border:1.5px solid var(--pink-200);border-radius:99px;padding:5px 14px;font-size:.8rem;font-weight:600;color:var(--pink-600)}
 
-/* ===== STUDENT CARD ===== */
-.student-header {
-  display: flex; align-items: center; gap: 16px;
-  background: linear-gradient(135deg, var(--pink-50), #fff5fb);
-  border: 1.5px solid var(--pink-200);
-  border-radius: var(--r-md);
-  padding: 18px 20px;
-  margin-bottom: 14px;
-}
-.stu-avatar {
-  width: 54px; height: 54px;
-  background: linear-gradient(135deg, var(--pink-300), var(--pink-500));
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem;
-  flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(236,72,153,0.3);
-}
-.stu-name { font-size: 1.15rem; font-weight: 700; color: var(--gray-800); }
-.stu-id { font-size: 0.82rem; color: var(--gray-400); margin-top: 2px; }
-.stu-class {
-  display: inline-block;
-  background: var(--pink-400); color: white;
-  font-size: 0.72rem; font-weight: 600;
-  padding: 3px 10px; border-radius: 20px;
-  margin-top: 5px;
-}
+/* COUNTDOWN */
+.countdown-box{background:linear-gradient(135deg,#fff7ed,#fef3c7);border:1.5px solid #fde68a;border-radius:var(--r-sm);padding:13px 16px;margin-bottom:14px;display:none}
+.countdown-title{font-size:.78rem;font-weight:700;color:#92400e;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.countdown-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(253,230,138,.5);font-size:.88rem}
+.countdown-item:last-child{border-bottom:none}
+.countdown-days{background:var(--amber-400);color:white;font-weight:700;font-size:.8rem;font-family:'Poppins',sans-serif;padding:2px 10px;border-radius:20px}
+.countdown-days.urgent{background:#f97316}
+.countdown-days.overdue{background:var(--red-600)}
 
-/* ===== PROGRESS ===== */
-.progress-wrap { margin-bottom: 14px; }
-.prog-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.prog-label { font-weight: 600; font-size: 0.95rem; }
-.prog-pct { font-size: 1.8rem; font-weight: 700; color: var(--pink-500); font-family: 'Poppins', sans-serif; }
-.prog-track {
-  height: 16px; background: var(--pink-100);
-  border-radius: 99px; overflow: hidden; margin-bottom: 12px;
-}
-.prog-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--pink-300), var(--pink-500));
-  border-radius: 99px;
-  transition: width 1.2s cubic-bezier(.4,0,.2,1);
-  position: relative;
-}
-.prog-bar::after {
-  content: '';
-  position: absolute; right: 0; top: 0; bottom: 0; width: 28px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35));
-}
-.prog-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-.chip {
-  padding: 5px 14px; border-radius: 99px;
-  font-size: 0.82rem; font-weight: 600;
-  font-family: 'Poppins', sans-serif;
-}
-.chip.done { background: var(--green-100); color: var(--green-600); }
-.chip.miss { background: var(--red-100);   color: var(--red-600); }
-.chip.total{ background: var(--pink-100);  color: var(--pink-600); }
+/* WORK LIST */
+.section-title{font-size:.75rem;font-weight:700;color:var(--gray-400);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.term-label{font-size:.8rem;font-weight:700;color:var(--pink-500);background:var(--pink-50);border:1px solid var(--pink-200);border-radius:8px;padding:5px 14px;display:inline-block;margin-bottom:8px}
+.work-item{background:white;border-radius:var(--r-sm);padding:13px 16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-sm);border:1px solid rgba(0,0,0,.04);margin-bottom:8px;transition:transform .15s,box-shadow .15s;animation:slideUp .3s ease both}
+.work-item:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.work-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.work-icon.done{background:var(--green-100)}.work-icon.miss{background:var(--red-100)}
+.work-name{flex:1;font-size:.92rem;font-weight:500}
+.work-dl{font-size:.72rem;color:var(--gray-400);margin-top:2px}
+.work-dl.urgent{color:#f97316;font-weight:600}.work-dl.overdue{color:var(--red-600);font-weight:600}
+.work-status{padding:4px 12px;border-radius:99px;font-size:.8rem;font-weight:700;white-space:nowrap;font-family:'Poppins',sans-serif}
+.work-status.done{background:var(--green-100);color:var(--green-600)}
+.work-status.miss{background:var(--red-100);color:var(--red-600)}
 
-/* ===== MOTIVATE ===== */
-.motivate {
-  margin-top: 14px;
-  padding: 14px 18px;
-  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
-  border: 1px solid var(--pink-200);
-  border-radius: var(--r-sm);
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--pink-600);
-  text-align: center;
-}
+/* VS AVG */
+.vs-avg{font-size:.72rem;margin-top:2px;font-weight:600}
+.vs-avg.above{color:var(--green-600)}.vs-avg.below{color:var(--red-600)}.vs-avg.equal{color:var(--gray-400)}
 
-/* ===== BADGE ===== */
-.badges-row {
-  display: flex; gap: 8px; flex-wrap: wrap;
-  margin-top: 12px;
-}
-.badge {
-  display: flex; align-items: center; gap: 6px;
-  background: linear-gradient(135deg, #fdf2f8, white);
-  border: 1.5px solid var(--pink-200);
-  border-radius: 99px;
-  padding: 5px 14px;
-  font-size: 0.8rem; font-weight: 600;
-  color: var(--pink-600);
-  animation: popIn 0.4s cubic-bezier(.34,1.56,.64,1) both;
-}
+/* ACTIONS */
+.actions-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn-action{flex:1;min-width:120px;padding:12px 14px;border:2px solid var(--pink-200);background:white;color:var(--pink-500);border-radius:var(--r-sm);font-family:'Prompt',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
+.btn-action:hover{background:var(--pink-50);border-color:var(--pink-400);transform:translateY(-1px)}
+.btn-action.primary{background:linear-gradient(135deg,var(--pink-400),var(--pink-600));color:white;border-color:transparent;box-shadow:0 4px 14px rgba(236,72,153,.35)}
+.btn-action.primary:hover{box-shadow:0 6px 20px rgba(236,72,153,.45)}
 
-/* ===== COUNTDOWN ===== */
-.countdown-box {
-  background: linear-gradient(135deg, #fff7ed, #fef3c7);
-  border: 1.5px solid #fde68a;
-  border-radius: var(--r-sm);
-  padding: 13px 16px;
-  margin-bottom: 14px;
-  display: none;
-}
-.countdown-title { font-size: 0.78rem; font-weight: 700; color: #92400e; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
-.countdown-item {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 7px 0;
-  border-bottom: 1px solid rgba(253,230,138,0.5);
-  font-size: 0.88rem;
-}
-.countdown-item:last-child { border-bottom: none; }
-.countdown-days {
-  background: var(--amber-400); color: white;
-  font-weight: 700; font-size: 0.8rem; font-family: 'Poppins', sans-serif;
-  padding: 2px 10px; border-radius: 20px;
-}
-.countdown-days.urgent { background: var(--rose-500); }
-.countdown-days.overdue{ background: var(--red-600); }
+/* QR & SHARE */
+.qr-wrap{text-align:center;padding:16px;display:none}
+#qrcode{display:inline-block;padding:12px;background:white;border-radius:14px;border:2px solid var(--pink-200)}
+.share-link-box{background:var(--pink-50);border:1.5px solid var(--pink-200);border-radius:var(--r-sm);padding:10px 14px;font-size:.82rem;color:var(--pink-600);display:none;word-break:break-all;margin-top:10px}
+.hidden-notice{font-size:.75rem;color:var(--gray-400);text-align:center;margin-top:6px}
 
-/* ===== WORK LIST ===== */
-.section-title {
-  font-size: 0.75rem; font-weight: 700;
-  color: var(--gray-400); letter-spacing: 0.1em;
-  text-transform: uppercase; margin-bottom: 10px;
-}
-.term-group { margin-bottom: 18px; }
-.term-label {
-  font-size: 0.8rem; font-weight: 700;
-  color: var(--pink-500);
-  background: var(--pink-50);
-  border: 1px solid var(--pink-200);
-  border-radius: 8px;
-  padding: 5px 14px;
-  display: inline-block;
-  margin-bottom: 8px;
-}
-.work-item {
-  background: white;
-  border-radius: var(--r-sm);
-  padding: 13px 16px;
-  display: flex; align-items: center; gap: 12px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(0,0,0,0.04);
-  margin-bottom: 8px;
-  transition: transform 0.15s, box-shadow 0.15s;
-  animation: slideUp 0.3s ease both;
-}
-.work-item:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
-.work-icon {
-  width: 38px; height: 38px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem; flex-shrink: 0;
-}
-.work-icon.done { background: var(--green-100); }
-.work-icon.miss { background: var(--red-100); }
-.work-name { flex: 1; font-size: 0.92rem; font-weight: 500; }
-.work-dl {
-  font-size: 0.72rem; color: var(--gray-400);
-  margin-top: 2px;
-}
-.work-dl.urgent { color: #f97316; font-weight: 600; }
-.work-dl.overdue{ color: var(--red-600); font-weight: 600; }
-.work-status {
-  padding: 4px 12px;
-  border-radius: 99px;
-  font-size: 0.8rem; font-weight: 700;
-  white-space: nowrap;
-  font-family: 'Poppins', sans-serif;
-}
-.work-status.done { background: var(--green-100); color: var(--green-600); }
-.work-status.miss { background: var(--red-100);   color: var(--red-600); }
+/* CACHE BAR */
+.cache-bar{background:var(--amber-100);border:1px solid #fde68a;border-radius:var(--r-sm);padding:10px 14px;display:none;align-items:center;justify-content:space-between;gap:10px;font-size:.82rem;color:#92400e;margin-bottom:12px}
+.cache-bar button{border:none;background:var(--amber-400);color:white;padding:4px 12px;border-radius:6px;cursor:pointer;font-family:'Prompt',sans-serif;font-size:.78rem;font-weight:600}
 
-/* ===== ACTIONS ===== */
-.actions-row {
-  display: flex; gap: 10px;
-  flex-wrap: wrap; margin-top: 14px;
-}
-.btn-action {
-  flex: 1; min-width: 120px;
-  padding: 12px 14px;
-  border: 2px solid var(--pink-200);
-  background: white; color: var(--pink-500);
-  border-radius: var(--r-sm);
-  font-family: 'Prompt', sans-serif;
-  font-size: 0.88rem; font-weight: 600;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  transition: all 0.2s;
-}
-.btn-action:hover { background: var(--pink-50); border-color: var(--pink-400); transform: translateY(-1px); }
-.btn-action.primary {
-  background: linear-gradient(135deg, var(--pink-400), var(--pink-600));
-  color: white; border-color: transparent;
-  box-shadow: 0 4px 14px rgba(236,72,153,0.35);
-}
-.btn-action.primary:hover { box-shadow: 0 6px 20px rgba(236,72,153,0.45); }
+/* ADMIN */
+.admin-panel{background:white;border-radius:var(--r-lg);padding:24px;box-shadow:var(--shadow-lg);border:2px solid var(--amber-400);display:none;animation:slideUp .3s ease;margin-bottom:14px}
+.admin-header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.admin-title{font-size:1.05rem;font-weight:700;color:#92400e}
+.admin-badge{background:var(--amber-400);color:white;font-size:.68rem;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:.05em}
+.admin-tabs{display:flex;gap:6px;margin-bottom:18px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.admin-tabs::-webkit-scrollbar{display:none}
+.atab{padding:7px 16px;border-radius:99px;border:2px solid var(--amber-100);background:var(--amber-100);color:#92400e;font-family:'Prompt',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.atab.active,.atab:hover{background:var(--amber-400);color:white;border-color:var(--amber-400)}
+.atab-content{display:none}.atab-content.active{display:block}
 
-/* ===== QR ===== */
-.qr-wrap { text-align: center; padding: 16px; display: none; }
-#qrcode { display: inline-block; padding: 12px; background: white; border-radius: 14px; border: 2px solid var(--pink-200); }
-.qr-caption { font-size: 0.78rem; color: var(--gray-400); margin-top: 8px; }
+/* OVERVIEW CARDS */
+.overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.overview-card{background:white;border-radius:var(--r-sm);padding:14px;border:2px solid var(--pink-100);cursor:pointer;transition:all .2s;text-align:center}
+.overview-card:hover{border-color:var(--pink-400);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.overview-card.selected{border-color:var(--pink-500);background:var(--pink-50)}
+.ov-class{font-size:1.1rem;font-weight:700;color:var(--pink-600);font-family:'Poppins',sans-serif}
+.ov-pct{font-size:1.6rem;font-weight:700;font-family:'Poppins',sans-serif;margin:4px 0}
+.ov-pct.high{color:var(--green-600)}.ov-pct.mid{color:#f97316}.ov-pct.low{color:var(--red-600)}
+.ov-sub{font-size:.72rem;color:var(--gray-400)}
+.ov-bar{height:6px;background:var(--pink-100);border-radius:99px;margin-top:8px;overflow:hidden}
+.ov-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--pink-300),var(--pink-500));transition:width .8s ease}
 
-/* ===== SHARE LINK ===== */
-.share-link-box {
-  background: var(--pink-50);
-  border: 1.5px solid var(--pink-200);
-  border-radius: var(--r-sm);
-  padding: 10px 14px;
-  font-size: 0.82rem;
-  color: var(--pink-600);
-  display: none;
-  word-break: break-all;
-  margin-top: 10px;
-}
+/* HEATMAP */
+.heatmap-wrap{overflow-x:auto;margin-top:14px}
+.heatmap-table{border-collapse:collapse;font-size:.78rem;min-width:500px;width:100%}
+.heatmap-table th{background:var(--pink-50);padding:8px 6px;text-align:center;border:1px solid var(--pink-100);font-weight:600;color:var(--pink-600);white-space:nowrap;max-width:80px;overflow:hidden;text-overflow:ellipsis}
+.heatmap-table th.name-col{text-align:left;min-width:120px}
+.heatmap-table td{padding:6px;border:1px solid var(--pink-100);text-align:center}
+.heatmap-table tr:hover td{background:rgba(244,114,182,.05)}
+.hm-cell{width:28px;height:28px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:.9rem;margin:auto}
+.hm-cell.done{background:var(--green-100)}.hm-cell.miss{background:var(--red-100)}
+.td-name{text-align:left;font-size:.82rem;font-weight:500;padding-left:10px}
 
-/* ===== HIDDEN NOTICE ===== */
-.hidden-notice { font-size: 0.75rem; color: var(--gray-400); text-align: center; margin-top: 6px; }
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.stat-box{background:var(--amber-100);border-radius:var(--r-sm);padding:14px;text-align:center}
+.stat-val{font-size:1.7rem;font-weight:700;color:#92400e;font-family:'Poppins',sans-serif}
+.stat-lbl{font-size:.78rem;color:#b45309;margin-top:2px}
+.donut-wrap{display:flex;align-items:center;justify-content:center;gap:20px;margin:14px 0;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:.85rem}
+.legend-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
 
-/* ===== CACHE BANNER ===== */
-.cache-bar {
-  background: var(--amber-100);
-  border: 1px solid #fde68a;
-  border-radius: var(--r-sm);
-  padding: 10px 14px;
-  display: none;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 0.82rem;
-  color: #92400e;
-  margin-bottom: 12px;
-}
-.cache-bar button {
-  border: none; background: var(--amber-400); color: white;
-  padding: 4px 12px; border-radius: 6px; cursor: pointer;
-  font-family: 'Prompt', sans-serif; font-size: 0.78rem; font-weight: 600;
-}
+/* CONFIG */
+.config-list{display:flex;flex-direction:column;gap:8px}
+.config-row{display:flex;align-items:center;gap:8px}
+.config-orig{font-size:.78rem;color:var(--gray-400);width:120px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.config-input{flex:1;padding:8px 12px;border:1.5px solid var(--amber-100);border-radius:8px;font-family:'Prompt',sans-serif;font-size:.88rem;outline:none}
+.config-input:focus{border-color:var(--amber-400)}
+.config-select{padding:8px 10px;border:1.5px solid var(--amber-100);border-radius:8px;font-family:'Prompt',sans-serif;font-size:.82rem;outline:none;background:white;cursor:pointer}
+.config-select:focus{border-color:var(--amber-400)}
 
-/* ===== ADMIN PANEL ===== */
-.admin-panel {
-  background: white;
-  border-radius: var(--r-lg);
-  padding: 24px;
-  box-shadow: var(--shadow-lg);
-  border: 2px solid var(--amber-400);
-  display: none;
-  animation: slideUp 0.3s ease;
-  margin-bottom: 14px;
-}
-.admin-header {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 18px;
-}
-.admin-title { font-size: 1.05rem; font-weight: 700; color: #92400e; }
-.admin-badge {
-  background: var(--amber-400); color: white;
-  font-size: 0.68rem; font-weight: 700;
-  padding: 2px 9px; border-radius: 20px;
-  letter-spacing: 0.05em;
-}
-.admin-tabs {
-  display: flex; gap: 6px;
-  margin-bottom: 18px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 2px;
-}
-.admin-tabs::-webkit-scrollbar { display: none; }
-.atab {
-  padding: 7px 16px;
-  border-radius: 99px;
-  border: 2px solid var(--amber-100);
-  background: var(--amber-100);
-  color: #92400e;
-  font-family: 'Prompt', sans-serif;
-  font-size: 0.82rem; font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s;
-  flex-shrink: 0;
-}
-.atab.active, .atab:hover {
-  background: var(--amber-400); color: white; border-color: var(--amber-400);
-}
+/* MISSING */
+.missing-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:white;border-radius:8px;margin-bottom:6px;border-left:3px solid var(--red-500);box-shadow:var(--shadow-sm)}
+.missing-name{font-weight:500;font-size:.88rem}
+.missing-meta{font-size:.72rem;color:var(--gray-400);margin-top:1px}
+.missing-cnt{background:var(--red-100);color:var(--red-600);font-weight:700;font-size:.78rem;padding:2px 10px;border-radius:20px;font-family:'Poppins',sans-serif}
 
-/* admin tabs content */
-.atab-content { display: none; }
-.atab-content.active { display: block; }
+/* ANNOUNCE */
+.announce-textarea{width:100%;padding:12px 14px;border:1.5px solid var(--amber-100);border-radius:var(--r-sm);font-family:'Prompt',sans-serif;font-size:.9rem;outline:none;resize:vertical;min-height:80px}
+.announce-textarea:focus{border-color:var(--amber-400)}
 
-/* Stats */
-.stats-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px;
-}
-.stat-box {
-  background: var(--amber-100); border-radius: var(--r-sm);
-  padding: 14px; text-align: center;
-}
-.stat-val { font-size: 1.7rem; font-weight: 700; color: #92400e; font-family: 'Poppins', sans-serif; }
-.stat-lbl { font-size: 0.78rem; color: #b45309; margin-top: 2px; }
+/* PDF EXPORT SELECTOR */
+.pdf-sheet-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.pdf-sheet-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--amber-100);border-radius:var(--r-sm)}
+.pdf-sheet-row label{display:flex;align-items:center;gap:8px;flex:1;cursor:pointer;font-size:.9rem;font-weight:500;color:#92400e}
+.pdf-sheet-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--amber-400);cursor:pointer}
 
-/* Donut */
-.donut-wrap { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 14px 0; flex-wrap: wrap; }
-.donut-canvas { flex-shrink: 0; }
-.donut-legend { display: flex; flex-direction: column; gap: 8px; }
-.legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
-.legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+/* ADMIN SECURITY */
+.admin-pass-input{width:100%;padding:12px 14px;border:1.5px solid var(--amber-100);border-radius:var(--r-sm);font-family:'Prompt',sans-serif;font-size:.9rem;outline:none;margin-bottom:8px}
+.admin-pass-input:focus{border-color:var(--amber-400)}
 
-/* Search in admin */
-.admin-search-row { display: flex; gap: 8px; margin-bottom: 12px; }
-.admin-search-input {
-  flex: 1; padding: 10px 14px;
-  border: 1.5px solid var(--amber-100); border-radius: var(--r-sm);
-  font-family: 'Prompt', sans-serif; font-size: 0.9rem;
-  outline: none;
-}
-.admin-search-input:focus { border-color: var(--amber-400); }
-.btn-admin-search {
-  padding: 10px 16px;
-  background: var(--amber-400); color: white; border: none;
-  border-radius: var(--r-sm); font-family: 'Prompt', sans-serif;
-  font-size: 0.85rem; font-weight: 600; cursor: pointer;
-}
+/* SAVE BTN */
+.btn-save{width:100%;margin-top:12px;padding:13px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:var(--r-sm);font-family:'Prompt',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(245,158,11,.3);transition:all .2s}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(245,158,11,.4)}
+.btn-save.gray{background:var(--gray-200);color:var(--gray-600);box-shadow:none}
 
-/* Rename & Deadline */
-.config-list { display: flex; flex-direction: column; gap: 8px; }
-.config-row { display: flex; align-items: center; gap: 8px; }
-.config-orig { font-size: 0.78rem; color: var(--gray-400); width: 120px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.config-input {
-  flex: 1; padding: 8px 12px;
-  border: 1.5px solid var(--amber-100); border-radius: 8px;
-  font-family: 'Prompt', sans-serif; font-size: 0.88rem; outline: none;
-}
-.config-input:focus { border-color: var(--amber-400); }
-.config-select {
-  padding: 8px 10px;
-  border: 1.5px solid var(--amber-100); border-radius: 8px;
-  font-family: 'Prompt', sans-serif; font-size: 0.82rem; outline: none;
-  background: white; cursor: pointer;
-}
-.config-select:focus { border-color: var(--amber-400); }
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--gray-800);color:white;padding:12px 24px;border-radius:99px;font-size:.88rem;font-weight:500;font-family:'Prompt',sans-serif;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:999;pointer-events:none;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
 
-/* Announce */
-.announce-textarea {
-  width: 100%; padding: 12px 14px;
-  border: 1.5px solid var(--amber-100); border-radius: var(--r-sm);
-  font-family: 'Prompt', sans-serif; font-size: 0.9rem;
-  outline: none; resize: vertical; min-height: 80px;
-}
-.announce-textarea:focus { border-color: var(--amber-400); }
-
-/* Missing */
-.missing-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 14px;
-  background: white; border-radius: 8px; margin-bottom: 6px;
-  border-left: 3px solid var(--red-500); box-shadow: var(--shadow-sm);
-}
-.missing-name { font-weight: 500; font-size: 0.88rem; }
-.missing-meta { font-size: 0.72rem; color: var(--gray-400); margin-top: 1px; }
-.missing-cnt {
-  background: var(--red-100); color: var(--red-600);
-  font-weight: 700; font-size: 0.78rem;
-  padding: 2px 10px; border-radius: 20px;
-  font-family: 'Poppins', sans-serif;
-}
-
-/* Sheet mgmt */
-.sheet-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 14px;
-  background: var(--amber-100); border-radius: var(--r-sm);
-  margin-bottom: 8px;
-}
-.sheet-name { flex: 1; font-weight: 500; font-size: 0.88rem; color: #92400e; }
-.sheet-count { font-size: 0.75rem; color: #b45309; }
-
-/* Save btn */
-.btn-save {
-  width: 100%; margin-top: 12px;
-  padding: 13px;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: white; border: none; border-radius: var(--r-sm);
-  font-family: 'Prompt', sans-serif;
-  font-size: 0.95rem; font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(245,158,11,0.3);
-  transition: all 0.2s;
-}
-.btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245,158,11,0.4); }
-
-/* ===== RESULT AREA ===== */
-#resultArea { display: none; }
-
-/* ===== TOAST ===== */
-.toast {
-  position: fixed; bottom: 24px; left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: var(--gray-800); color: white;
-  padding: 12px 24px; border-radius: 99px;
-  font-size: 0.88rem; font-weight: 500;
-  font-family: 'Prompt', sans-serif;
-  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
-  z-index: 999; pointer-events: none; white-space: nowrap;
-}
-.toast.show { transform: translateX(-50%) translateY(0); }
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 480px) {
-  .hero { padding: 40px 16px 64px; }
-  .hero-title { font-size: 1.2rem; }
-  .actions-row { flex-direction: column; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .modal { padding: 24px 20px; }
-}
-
-/* ===== PRINT ===== */
-@media print {
-  .hero, .card.search-wrap, .actions-row, .admin-panel, .cache-bar, .qr-wrap { display: none !important; }
-  body { background: white; }
-  .card { box-shadow: none; border: 1px solid #eee; }
-}
+@media(max-width:480px){.hero{padding:40px 16px 64px}.hero-title{font-size:1.2rem}.actions-row{flex-direction:column}.stats-grid{grid-template-columns:repeat(2,1fr)}.modal{padding:24px 20px}}
+@media print{.hero,.card.search-wrap,.actions-row,.admin-panel,.cache-bar,.qr-wrap{display:none!important}body{background:white}.card{box-shadow:none;border:1px solid #eee}}
 </style>
 </head>
 <body>
 
-<!-- HERO -->
 <div class="hero">
-  <div class="hero-deco hero-deco-1">🎨</div>
-  <div class="hero-deco hero-deco-2">✏️</div>
   <div class="hero-icon">🎨</div>
   <div class="hero-title">ติดตามสถานะการส่งงานวิชาศิลปะ</div>
   <div class="hero-sub">ตรวจสอบสถานะการส่งงานของคุณได้เลย</div>
 </div>
 
 <div class="container">
-
-  <!-- Cache -->
   <div class="cache-bar" id="cacheBanner">
     <span id="cacheText">⚡ ใช้ข้อมูลที่บันทึกไว้</span>
-    <button onclick="clearCache()">รีเฟรช</button>
+    <button onclick="clearLocalCache()">รีเฟรช</button>
   </div>
-
-  <!-- Announcement -->
   <div class="announce-bar" id="announceBar">
-    <div class="announce-icon">📢</div>
+    <div style="font-size:1.1rem;flex-shrink:0;margin-top:1px">📢</div>
     <div id="announceText"></div>
   </div>
 
@@ -745,68 +262,39 @@ body {
   <div class="card search-wrap">
     <span class="search-label">🔍 ค้นหาด้วยรหัสประจำตัว</span>
     <div class="search-row">
-      <input type="text" id="searchInput" class="search-input"
-        placeholder="กรอกรหัสนักเรียน..."
-        inputmode="numeric" autocomplete="off"
-        onkeydown="if(event.key==='Enter')doSearch()">
+      <input type="text" id="searchInput" class="search-input" placeholder="กรอกรหัสนักเรียน..." inputmode="numeric" autocomplete="off">
       <button class="btn-search" onclick="doSearch()">ค้นหา</button>
     </div>
     <div class="hint">กรอกรหัสแล้วกด Enter หรือปุ่มค้นหา</div>
     <div class="error-box" id="errorBox"></div>
   </div>
 
-  <!-- Loading -->
-  <div class="loading" id="loadingBox">
-    <div class="spinner"></div>
-    <div class="loading-text">กำลังโหลดข้อมูล...</div>
-  </div>
-
-  <!-- Skeleton Screen -->
+  <!-- Skeleton -->
   <div class="skeleton" id="skeletonBox">
-    <div class="skeleton-card">
-      <div class="skel-row">
-        <div class="skel-avatar"></div>
-        <div style="flex:1"><div class="skel-line w60 h20"></div><div class="skel-line w40"></div></div>
-      </div>
-    </div>
-    <div class="skeleton-card">
-      <div class="skel-line w40 h20"></div>
-      <div class="skel-line w80"></div>
-      <div class="skel-line w60"></div>
-    </div>
+    <div class="skeleton-card"><div class="skel-row"><div class="skel-avatar"></div><div style="flex:1"><div class="skel-line w60 h20"></div><div class="skel-line w40"></div></div></div></div>
+    <div class="skeleton-card"><div class="skel-line w40 h20"></div><div class="skel-line w80"></div><div class="skel-line w60"></div></div>
     <div class="skeleton-card"><div class="skel-line w60"></div></div>
     <div class="skeleton-card"><div class="skel-line w80"></div></div>
-    <div class="skeleton-card"><div class="skel-line w60"></div></div>
   </div>
+  <div class="loading" id="loadingBox"><div class="spinner"></div><div class="loading-text">กำลังโหลด...</div></div>
 
   <!-- Result -->
-  <div id="resultArea">
-
-    <!-- Student header -->
+  <div id="resultArea" style="display:none">
     <div class="student-header" id="stuHeader">
-      <div class="stu-avatar">👧</div>
+      <div class="stu-avatar" id="stuAvatar">👤</div>
       <div>
         <div class="stu-name" id="stuName">-</div>
-        <div class="stu-id"  id="stuId">-</div>
+        <div class="stu-id" id="stuId">-</div>
         <span class="stu-class" id="stuClass">-</span>
       </div>
     </div>
-
-    <!-- Countdown -->
     <div class="countdown-box" id="countdownBox">
       <div class="countdown-title">⏰ งานใกล้หมดเวลา</div>
       <div id="countdownList"></div>
     </div>
-
-    <!-- Progress -->
-    <div class="card progress-wrap">
-      <div class="prog-header">
-        <span class="prog-label">📊 ความคืบหน้า</span>
-        <span class="prog-pct" id="pctText">0%</span>
-      </div>
-      <div class="prog-track">
-        <div class="prog-bar" id="progBar" style="width:0%"></div>
-      </div>
+    <div class="card">
+      <div class="prog-header"><span class="prog-label">📊 ความคืบหน้า</span><span class="prog-pct" id="pctText">0%</span></div>
+      <div class="prog-track"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
       <div class="prog-chips">
         <span class="chip done" id="chipDone">ส่งแล้ว 0</span>
         <span class="chip miss" id="chipMiss">ยังไม่ส่ง 0</span>
@@ -815,98 +303,109 @@ body {
       <div class="motivate" id="motivateBox"></div>
       <div class="badges-row" id="badgesRow"></div>
     </div>
-
-    <!-- Works -->
     <div class="section-title">รายการชิ้นงาน</div>
     <div id="workGroups"></div>
     <div class="hidden-notice" id="hiddenNote"></div>
-
-    <!-- Actions -->
     <div class="actions-row">
-      <button class="btn-action primary" onclick="exportPDF()">📄 Export PDF</button>
+      <button class="btn-action primary" onclick="exportPDFStudent()">📄 PDF รายคน</button>
       <button class="btn-action" onclick="toggleQR()">📱 QR Code</button>
-      <button class="btn-action" onclick="genShareLink()">🔗 แชร์ลิงก์</button>
+      <button class="btn-action" onclick="genShareLink()">🔗 แชร์</button>
     </div>
     <div class="share-link-box" id="shareLinkBox"></div>
-    <div class="qr-wrap" id="qrWrap">
-      <div id="qrcode"></div>
-      <div class="qr-caption">สแกนเพื่อเข้าหน้าเว็บนี้</div>
-    </div>
+    <div class="qr-wrap" id="qrWrap"><div id="qrcode"></div><div style="font-size:.78rem;color:var(--gray-400);margin-top:8px">สแกนเพื่อเข้าหน้าเว็บนี้</div></div>
+  </div>
 
-  </div><!-- /resultArea -->
-
-  <!-- ADMIN PANEL -->
+  <!-- ADMIN -->
   <div class="admin-panel" id="adminPanel">
     <div class="admin-header">
       <span style="font-size:1.3rem">⚙️</span>
       <span class="admin-title">โหมดครู (Admin)</span>
       <span class="admin-badge">ADMIN</span>
+      <button onclick="exitAdmin()" style="margin-left:auto;border:none;background:none;cursor:pointer;color:var(--gray-400);font-size:1.2rem">✕</button>
     </div>
     <div class="admin-tabs">
-      <button class="atab active" onclick="showAdminTab('stats',this)">📊 สถิติ</button>
+      <button class="atab active" onclick="showAdminTab('overview',this)">🏫 ภาพรวม</button>
+      <button class="atab" onclick="showAdminTab('heatmap',this)">🗺️ Heatmap</button>
       <button class="atab" onclick="showAdminTab('search',this)">🔍 ค้นหา</button>
-      <button class="atab" onclick="showAdminTab('sheets',this)">📂 ห้องเรียน</button>
+      <button class="atab" onclick="showAdminTab('pdfexport',this)">📄 Export PDF</button>
+      <button class="atab" onclick="showAdminTab('sheets',this)">📂 ซ่อนงาน</button>
       <button class="atab" onclick="showAdminTab('rename',this)">✏️ ชื่องาน</button>
       <button class="atab" onclick="showAdminTab('deadline',this)">📅 Deadline</button>
       <button class="atab" onclick="showAdminTab('announce',this)">📢 ประกาศ</button>
       <button class="atab" onclick="showAdminTab('missing',this)">❌ ค้างส่ง</button>
-      <button class="atab" onclick="showAdminTab('addsheets',this)">➕ เพิ่ม Sheets</button>
+      <button class="atab" onclick="showAdminTab('settings',this)">🔐 ตั้งค่า</button>
     </div>
 
-    <!-- Stats -->
-    <div class="atab-content active" id="atab-stats">
+    <!-- OVERVIEW -->
+    <div class="atab-content active" id="atab-overview">
+      <p style="font-size:.85rem;color:var(--gray-500);margin-bottom:12px">ภาพรวมทุกห้องเรียนเปรียบเทียบกัน</p>
+      <div class="overview-grid" id="overviewGrid"></div>
+      <div id="overviewDetail"></div>
+    </div>
+
+    <!-- HEATMAP -->
+    <div class="atab-content" id="atab-heatmap">
       <div style="margin-bottom:10px">
-        <select id="statsSheetSelect" class="config-select" style="width:100%" onchange="loadStats()">
+        <select id="heatmapSheetSelect" class="config-select" style="width:100%" onchange="renderHeatmap()">
           <option value="">-- เลือกห้องเรียน --</option>
         </select>
       </div>
-      <div id="statsContent"></div>
-      <button onclick="adminClearCache()" style="margin-top:10px;width:100%;padding:10px;background:#fef3c7;border:1.5px solid #fde68a;border-radius:10px;color:#92400e;font-family:Prompt,sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer">🗑️ ล้าง Cache ทั้งหมด (บังคับโหลดข้อมูลใหม่)</button>
+      <div class="heatmap-wrap" id="heatmapWrap"><div style="color:var(--gray-400);font-size:.85rem">เลือกห้องเพื่อดู Heatmap</div></div>
     </div>
 
-    <!-- Search -->
+    <!-- SEARCH -->
     <div class="atab-content" id="atab-search">
-      <div class="admin-search-row">
-        <input class="admin-search-input" id="adminSearchInput" placeholder="กรอกรหัสหรือชื่อนักเรียน" onkeydown="if(event.key==='Enter')adminSearch()">
-        <button class="btn-admin-search" onclick="adminSearch()">ค้นหา</button>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <input class="config-input" id="adminSearchInput" placeholder="รหัสหรือชื่อนักเรียน" onkeydown="if(event.key==='Enter')adminSearch()">
+        <button class="btn-save" style="width:auto;margin:0;padding:10px 16px" onclick="adminSearch()">ค้นหา</button>
       </div>
       <div id="adminSearchResult"></div>
     </div>
 
-    <!-- Sheets -->
+    <!-- PDF EXPORT -->
+    <div class="atab-content" id="atab-pdfexport">
+      <p style="font-size:.85rem;color:var(--gray-500);margin-bottom:12px">เลือกห้องที่ต้องการ Export</p>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <button onclick="selectAllSheetsPDF(true)" style="flex:1;padding:8px;border:1.5px solid var(--amber-100);background:var(--amber-100);border-radius:8px;font-family:Prompt,sans-serif;font-size:.82rem;font-weight:600;color:#92400e;cursor:pointer">เลือกทั้งหมด</button>
+        <button onclick="selectAllSheetsPDF(false)" style="flex:1;padding:8px;border:1.5px solid var(--gray-200);background:white;border-radius:8px;font-family:Prompt,sans-serif;font-size:.82rem;font-weight:600;color:var(--gray-600);cursor:pointer">ยกเลิกทั้งหมด</button>
+      </div>
+      <div class="pdf-sheet-list" id="pdfSheetList"></div>
+      <button class="btn-save" onclick="exportPDFClass()">📄 Export PDF ห้องที่เลือก</button>
+    </div>
+
+    <!-- HIDE WORKS -->
     <div class="atab-content" id="atab-sheets">
-      <p style="font-size:0.85rem;color:var(--gray-500);margin-bottom:12px">เลือกห้องเรียน แล้วกำหนดว่าจะแสดงชิ้นงานไหนให้นักเรียนเห็น</p>
+      <p style="font-size:.85rem;color:var(--gray-500);margin-bottom:12px">กำหนดว่าจะแสดงชิ้นงานไหนให้นักเรียนเห็น</p>
       <div style="margin-bottom:12px">
-        <select id="hideSheetSelect" class="config-select" style="width:100%25" onchange="renderHideWorks()">
+        <select id="hideSheetSelect" class="config-select" style="width:100%" onchange="renderHideWorks()">
           <option value="">-- เลือกห้องเรียน --</option>
         </select>
       </div>
       <div id="hideWorksList"></div>
-      <div id="hideWorksNote" style="font-size:0.78rem;color:var(--gray-400);margin-top:6px"></div>
       <button class="btn-save" id="btnSaveHidden" onclick="saveHiddenWorks()" style="display:none">💾 บันทึกการแสดง/ซ่อน</button>
     </div>
 
-    <!-- Rename -->
+    <!-- RENAME -->
     <div class="atab-content" id="atab-rename">
       <div class="config-list" id="renameList"></div>
       <button class="btn-save" onclick="saveRenames()">💾 บันทึกชื่องาน</button>
     </div>
 
-    <!-- Deadline -->
+    <!-- DEADLINE -->
     <div class="atab-content" id="atab-deadline">
       <div class="config-list" id="deadlineList"></div>
-      <button class="btn-save" onclick="saveDeadlines()">💾 บันทึกกำหนดส่ง</button>
+      <button class="btn-save" onclick="saveDeadlines()">💾 บันทึก Deadline</button>
     </div>
 
-    <!-- Announce -->
+    <!-- ANNOUNCE -->
     <div class="atab-content" id="atab-announce">
-      <p style="font-size:0.85rem;color:var(--gray-500);margin-bottom:10px">ข้อความนี้จะแสดงบนหน้าหลักให้นักเรียนเห็นทุกคน</p>
-      <textarea class="announce-textarea" id="announceInput" placeholder="พิมพ์ประกาศหรือข้อความถึงนักเรียน..."></textarea>
+      <p style="font-size:.85rem;color:var(--gray-500);margin-bottom:10px">ข้อความนี้จะแสดงบนหน้าหลักให้นักเรียนเห็น</p>
+      <textarea class="announce-textarea" id="announceInput" placeholder="พิมพ์ประกาศ..."></textarea>
       <button class="btn-save" onclick="saveAnnounce()">💾 บันทึกประกาศ</button>
-      <button class="btn-save" style="background:var(--gray-200);color:var(--gray-600);margin-top:6px;box-shadow:none" onclick="clearAnnounce()">🗑️ ลบประกาศ</button>
+      <button class="btn-save gray" style="margin-top:6px" onclick="clearAnnounce()">🗑️ ลบประกาศ</button>
     </div>
 
-    <!-- Missing -->
+    <!-- MISSING -->
     <div class="atab-content" id="atab-missing">
       <div style="margin-bottom:10px">
         <select id="missingSheetSelect" class="config-select" style="width:100%" onchange="loadMissing()">
@@ -917,26 +416,35 @@ body {
       <button class="btn-save" onclick="exportMissingCSV()" style="margin-top:10px">⬇️ Export CSV</button>
     </div>
 
-    <!-- Add Sheets -->
-    <div class="atab-content" id="atab-addsheets">
-      <p style="font-size:0.85rem;color:var(--gray-500);margin-bottom:12px">เพิ่ม Google Sheets ของระดับชั้นอื่นได้เลย ระบบจะค้นหาข้ามทุก Spreadsheet</p>
-      <div id="extraSheetsList"></div>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <input class="config-input" id="newSheetLabel" placeholder="ชื่อ เช่น ม.1, ม.2" style="flex:1">
-        <input class="config-input" id="newSheetUrl" placeholder="URL หรือ Spreadsheet ID" style="flex:2">
+    <!-- SETTINGS -->
+    <div class="atab-content" id="atab-settings">
+      <div style="font-size:.85rem;font-weight:700;color:#92400e;margin-bottom:10px">🔐 เปลี่ยนรหัส Admin</div>
+      <input class="admin-pass-input" type="password" id="oldPassInput" placeholder="รหัสเดิม">
+      <input class="admin-pass-input" type="password" id="newPassInput" placeholder="รหัสใหม่">
+      <input class="admin-pass-input" type="password" id="confirmPassInput" placeholder="ยืนยันรหัสใหม่">
+      <button class="btn-save" onclick="changeAdminPass()">💾 เปลี่ยนรหัส Admin</button>
+      <div style="margin-top:20px;border-top:1px solid var(--amber-100);padding-top:16px">
+        <div style="font-size:.85rem;font-weight:700;color:#92400e;margin-bottom:10px">🗑️ จัดการ Cache</div>
+        <button onclick="adminClearCache()" style="width:100%;padding:11px;background:var(--amber-100);border:1.5px solid #fde68a;border-radius:10px;color:#92400e;font-family:Prompt,sans-serif;font-size:.85rem;font-weight:600;cursor:pointer">ล้าง Cache ทั้งหมด (บังคับโหลดข้อมูลใหม่)</button>
       </div>
-      <button class="btn-save" onclick="addExtraSheet()" style="margin-top:8px">➕ เพิ่ม Spreadsheet</button>
-      <div style="font-size:0.78rem;color:var(--gray-400);margin-top:8px">หมายเหตุ: Spreadsheet ที่เพิ่มต้องเปิด Public (Anyone with link) และต้องติดตั้ง Code.gs ด้วย</div>
+      <div style="margin-top:16px;border-top:1px solid var(--amber-100);padding-top:16px">
+        <div style="font-size:.85rem;font-weight:700;color:#92400e;margin-bottom:10px">➕ เพิ่ม Spreadsheet ระดับชั้นอื่น</div>
+        <div id="extraSheetsList" style="margin-bottom:10px"></div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input class="config-input" id="newSheetLabel" placeholder="ชื่อ เช่น ม.1">
+          <input class="config-input" id="newSheetUrl" placeholder="Apps Script URL" style="flex:2">
+        </div>
+        <button class="btn-save" onclick="addExtraSheet()">➕ เพิ่ม</button>
+        <div style="font-size:.75rem;color:var(--gray-400);margin-top:6px">ต้องใช้ Apps Script URL (จาก Deploy) และ Spreadsheet ต้องติดตั้ง Code.gs</div>
+      </div>
     </div>
-
-  </div><!-- /adminPanel -->
-
-</div><!-- /container -->
+  </div>
+</div>
 
 <!-- Confirm Modal -->
 <div class="modal-overlay" id="confirmModal">
   <div class="modal">
-    <div class="modal-avatar" id="modalAvatar">👧</div>
+    <div class="modal-avatar" id="modalAvatar">👤</div>
     <div class="modal-title">พบข้อมูลนักเรียน — ยืนยันตัวตน</div>
     <div class="modal-name" id="modalName">-</div>
     <div class="modal-meta" id="modalMeta">-</div>
@@ -947,36 +455,23 @@ body {
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
 // ============================================================
-//  CONFIG — แก้ตรงนี้หลัง Deploy Apps Script
+//  CONFIG
 // ============================================================
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyjYA9KX4bR__RMky6xUkJ88JLxpX5crtxxWMlLBVMN3df0Djg5j52-fcIGwPswGdqkJw/exec'; // ← วาง URL ที่ได้จาก Deploy
-
-// ============================================================
-//  LOCALSTORAGE KEYS
-// ============================================================
-const LS = {
-  RENAMES:   'art_renames',
-  DEADLINES: 'art_deadlines',
-  ANNOUNCE:  'art_announce',
-  CACHE:     'art_cache',
-  CACHE_TS:  'art_cache_ts',
-  SHEETS_INFO: 'art_sheets_info',
-};
-const CACHE_TTL = 5 * 60 * 1000; // 5 นาที
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyjYA9KX4bR__RMky6xUkJ88JLxpX5crtxxWMlLBVMN3df0Djg5j52-fcIGwPswGdqkJw/exec';
+const CACHE_TTL = 5 * 60 * 1000;
+const LS = { RENAMES:'art_renames', DEADLINES:'art_deadlines', ANNOUNCE:'art_announce', TERMS:'art_terms', EXTRA:'art_extra_sheets', ADMIN_PASS:'art_admin_pass' };
+const DEFAULT_ADMIN_PASS = 'nutdanaichanim';
 
 // ============================================================
 //  STATE
 // ============================================================
-let pendingStudents = [];   // ผลค้นหา รอยืนยัน
-let pendingIndex = 0;
-let currentStudent = null;
-let allWorksFlat = [];      // ชื่องานทั้งหมด (จาก sheets info)
-let sheetsInfo = [];
+let pendingStudents = [], pendingIndex = 0, currentStudent = null;
+let sheetsInfo = [], allWorksFlat = [];
+let qrRendered = false;
 
 // ============================================================
 //  INIT
@@ -984,47 +479,45 @@ let sheetsInfo = [];
 window.addEventListener('DOMContentLoaded', () => {
   loadAnnouncement();
   prefetchSheetsInfo();
-
-  // PWA install
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  }
-
-  // URL param auto-search
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
   const params = new URLSearchParams(location.search);
   const pre = params.get('id');
-  if (pre) {
-    document.getElementById('searchInput').value = pre;
-    doSearch();
-  }
+  if (pre) { document.getElementById('searchInput').value = pre; doSearch(); }
+
+  // Debounce
+  const inp = document.getElementById('searchInput');
+  let timer = null;
+  inp.addEventListener('keydown', e => { if (e.key==='Enter') { clearTimeout(timer); doSearch(); } });
+  inp.addEventListener('input', () => {
+    clearTimeout(timer);
+    if (inp.value.trim().length >= 4) timer = setTimeout(() => doSearch(), 500);
+  });
 });
 
 // ============================================================
-//  API CALL
+//  API
 // ============================================================
 async function api(params) {
   const url = APPS_SCRIPT_URL + '?' + new URLSearchParams(params);
   const res = await fetch(url);
-  if (!res.ok) throw new Error('เชื่อมต่อไม่ได้ กรุณาตรวจสอบการตั้งค่า Apps Script');
+  if (!res.ok) throw new Error('เชื่อมต่อไม่ได้ (' + res.status + ')');
+  return res.json();
+}
+async function apiPost(body) {
+  const res = await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify(body) });
   return res.json();
 }
 
 async function prefetchSheetsInfo() {
-  const cached = getCache('sheetsInfo');
+  const cached = lcGet('sheetsInfo');
   if (cached) { sheetsInfo = cached; buildAllWorks(); return; }
   try {
-    const data = await api({ action: 'allSheets' });
-    if (data.success) {
-      sheetsInfo = data.sheets;
-      setCache('sheetsInfo', sheetsInfo);
-      buildAllWorks();
-    }
-  } catch (e) { /* silent */ }
+    const d = await api({ action:'allSheets' });
+    if (d.success) { sheetsInfo = d.sheets; lcSet('sheetsInfo', sheetsInfo); buildAllWorks(); }
+  } catch(e) {}
 }
-
 function buildAllWorks() {
-  const set = new Set();
-  allWorksFlat = [];
+  const set = new Set(); allWorksFlat = [];
   sheetsInfo.forEach(s => s.headers.forEach(h => { if (!set.has(h)) { set.add(h); allWorksFlat.push(h); } }));
 }
 
@@ -1032,205 +525,130 @@ function buildAllWorks() {
 //  SEARCH
 // ============================================================
 async function doSearch() {
-  const raw = document.getElementById('searchInput').value;
-  const query = raw.trim();
+  const query = document.getElementById('searchInput').value.trim();
   if (!query) return;
 
-  if (query === 'nutdanaichanim') { enterAdmin(); return; }
+  // Admin check — server-side verify
+  const adminPass = localStorage.getItem(LS.ADMIN_PASS) || DEFAULT_ADMIN_PASS;
+  if (query === adminPass) { enterAdmin(); return; }
 
   hideError();
   document.getElementById('resultArea').style.display = 'none';
   document.getElementById('adminPanel').style.display = 'none';
 
-  // Check cache
   const cacheKey = 'q_' + query;
-  const cached = getCache(cacheKey);
-  if (cached) {
-    showCacheBanner();
-    showConfirmModal(cached);
-    return;
-  }
+  const cached = lcGet(cacheKey);
+  if (cached) { showCacheBanner(); showConfirmModal(cached); return; }
 
-  showLoading(true);
+  showSkeleton(true);
   try {
-    const data = await api({ action: 'search', q: query });
-    if (!data.success) { showError(data.error || 'ไม่พบข้อมูล'); }
-    else {
-      setCache(cacheKey, data.students);
-      showConfirmModal(data.students);
+    let students = [];
+    const main = await api({ action:'search', q: query.toLowerCase() });
+    if (main.success) students = main.students;
+
+    // Extra sheets
+    for (const ex of getExtraSheets()) {
+      try {
+        const r = await fetch(ex.url + '?action=search&q=' + encodeURIComponent(query.toLowerCase()));
+        const d = await r.json();
+        if (d.success) students = students.concat(d.students);
+      } catch(e) {}
     }
-  } catch (e) { showError(e.message); }
-  showLoading(false);
+
+    if (students.length === 0) showError('ไม่พบรหัส/ชื่อ "' + query + '" ในระบบ');
+    else { lcSet(cacheKey, students); showConfirmModal(students); }
+  } catch(e) { showError(e.message); }
+  showSkeleton(false);
 }
 
 // ============================================================
 //  CONFIRM MODAL
 // ============================================================
 function showConfirmModal(students) {
-  pendingStudents = students;
-  pendingIndex = 0;
-
-  if (students.length === 0) { showError('ไม่พบนักเรียน'); return; }
-
-  // ถ้ามีหลาย match ให้ดูทีละคน
+  pendingStudents = students; pendingIndex = 0;
   const s = students[0];
-  document.getElementById('modalName').textContent = s.name || '(ไม่ระบุชื่อ)';
-  document.getElementById('modalMeta').textContent = `รหัส: ${s.id}  ·  ห้อง: ${formatClass(s.sheet)}`;
-  document.getElementById('modalAvatar').textContent = getAvatar(s.name, s.prefix);
+  document.getElementById('modalName').textContent = s.name || '-';
+  document.getElementById('modalMeta').textContent = 'รหัส: ' + s.id + '  ·  ห้อง: ' + formatClass(s.sheet);
+  document.getElementById('modalAvatar').textContent = getAvatar(s.prefix);
   document.getElementById('confirmModal').classList.add('show');
 }
-
-function closeModal() {
-  document.getElementById('confirmModal').classList.remove('show');
-  pendingStudents = [];
-}
-
+function closeModal() { document.getElementById('confirmModal').classList.remove('show'); }
 function confirmStudent() {
-  const s = pendingStudents[pendingIndex];
-  document.getElementById('confirmModal').classList.remove('show');
-  currentStudent = s;
-  renderStudent(s);
+  closeModal();
+  currentStudent = pendingStudents[pendingIndex];
+  renderStudent(currentStudent);
 }
 
 // ============================================================
 //  RENDER STUDENT
 // ============================================================
 function renderStudent(s) {
-  const renames  = getLS(LS.RENAMES,  {});
-  const deadlines= getLS(LS.DEADLINES,{});
-
-  // Student info
-  document.getElementById('stuName').textContent = s.name || '-';
-  document.getElementById('stuId').textContent   = `รหัส: ${s.id}`;
-  document.getElementById('stuClass').textContent= `ห้อง: ${formatClass(s.sheet)}`;
-  document.getElementById('stuHeader').querySelector('.stu-avatar').textContent = getAvatar(s.name, s.prefix);
-
+  const renames = getLS(LS.RENAMES, {}), deadlines = getLS(LS.DEADLINES, {});
   const works = s.works || [];
   let done = 0, miss = 0;
   works.forEach(w => w.submitted ? done++ : miss++);
-  const total = done + miss;
-  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  const total = done + miss, pct = total > 0 ? Math.round(done/total*100) : 0;
 
-  // Progress
-  setTimeout(() => { document.getElementById('progBar').style.width = pct + '%'; }, 120);
-  document.getElementById('pctText').textContent   = pct + '%';
-  document.getElementById('chipDone').textContent  = `ส่งแล้ว ${done}`;
-  document.getElementById('chipMiss').textContent  = `ยังไม่ส่ง ${miss}`;
-  document.getElementById('chipTotal').textContent = `ทั้งหมด ${total}`;
+  document.getElementById('stuAvatar').textContent = getAvatar(s.prefix);
+  document.getElementById('stuName').textContent = s.name || '-';
+  document.getElementById('stuId').textContent = 'รหัส: ' + s.id;
+  document.getElementById('stuClass').textContent = 'ห้อง: ' + formatClass(s.sheet);
+  setTimeout(() => document.getElementById('progBar').style.width = pct + '%', 120);
+  document.getElementById('pctText').textContent = pct + '%';
+  document.getElementById('chipDone').textContent = 'ส่งแล้ว ' + done;
+  document.getElementById('chipMiss').textContent = 'ยังไม่ส่ง ' + miss;
+  document.getElementById('chipTotal').textContent = 'ทั้งหมด ' + total;
   document.getElementById('motivateBox').textContent = getMotivate(pct);
 
   // Badges
-  renderBadges(pct, done, total);
+  const br = document.getElementById('badgesRow'); br.innerHTML = '';
+  const badges = [];
+  if (pct===100) badges.push('🏆 ส่งครบ 100%!');
+  if (pct>=80&&pct<100) badges.push('⭐ เกือบครบ');
+  if (done>=10) badges.push('🔥 ส่ง 10 ชิ้น');
+  if (done>=5)  badges.push('🎯 ส่ง 5 ชิ้น');
+  if (pct>=50)  badges.push('💪 ครึ่งทางแล้ว');
+  badges.forEach(b => { const el=document.createElement('div'); el.className='badge'; el.textContent=b; br.appendChild(el); });
 
   // Countdown
-  renderCountdown(works, renames, deadlines);
+  const upcoming = works.filter(w => !w.submitted && deadlines[w.name])
+    .map(w => ({ name: renames[w.name]||w.name, info: getDeadlineInfo(deadlines[w.name]) }))
+    .filter(x => x.info).sort((a,b) => new Date(a.info.raw)-new Date(b.info.raw));
+  const cb = document.getElementById('countdownBox');
+  if (upcoming.length > 0) {
+    cb.style.display = 'block';
+    document.getElementById('countdownList').innerHTML = upcoming.slice(0,4).map(u =>
+      '<div class="countdown-item"><span>' + esc(u.name) + '</span><span class="countdown-days ' + u.info.cls + '">' + u.info.text + '</span></div>'
+    ).join('');
+  } else cb.style.display = 'none';
 
-  // Work groups (by term)
-  renderWorkGroups(works, renames, deadlines);
-
-  document.getElementById('resultArea').style.display = 'block';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function renderBadges(pct, done, total) {
-  const row = document.getElementById('badgesRow');
-  row.innerHTML = '';
-  const badges = [];
-  if (pct === 100) badges.push('🏆 ส่งครบ 100%!');
-  if (pct >= 80 && pct < 100) badges.push('⭐ เกือบครบแล้ว');
-  if (done >= 5) badges.push('🎯 ส่งครบ 5 ชิ้น');
-  if (done >= 10) badges.push('🔥 ส่งครบ 10 ชิ้น');
-  if (pct >= 50) badges.push('💪 ครึ่งทางแล้ว');
-
-  badges.forEach(b => {
-    const el = document.createElement('div');
-    el.className = 'badge';
-    el.textContent = b;
-    row.appendChild(el);
-  });
-}
-
-function renderCountdown(works, renames, deadlines) {
-  const box = document.getElementById('countdownBox');
-  const list = document.getElementById('countdownList');
-  const upcoming = [];
-
-  works.forEach(w => {
-    if (w.submitted) return;
-    const dl = deadlines[w.name] || '';
-    if (!dl) return;
-    const info = getDeadlineInfo(dl);
-    if (info) upcoming.push({ name: renames[w.name] || w.name, info });
-  });
-
-  upcoming.sort((a, b) => {
-    const da = new Date(a.info.raw); const db = new Date(b.info.raw);
-    return da - db;
-  });
-
-  if (upcoming.length === 0) { box.style.display = 'none'; return; }
-  box.style.display = 'block';
-  list.innerHTML = upcoming.slice(0, 4).map(u => `
-    <div class="countdown-item">
-      <span>${esc(u.name)}</span>
-      <span class="countdown-days ${u.info.cls}">${u.info.text}</span>
-    </div>
-  `).join('');
-}
-
-function renderWorkGroups(works, renames, deadlines) {
-  const container = document.getElementById('workGroups');
-  container.innerHTML = '';
-
-  // Group by term (from LS)
-  const termMap = getLS('art_terms', {}); // { workName: 'เทอม 1' | 'เทอม 2' }
+  // Work groups
+  const termMap = getLS(LS.TERMS, {});
   const groups = {};
-
-  works.forEach((w, idx) => {
-    const term = termMap[w.name] || 'ทั่วไป';
-    if (!groups[term]) groups[term] = [];
-    groups[term].push({ ...w, idx });
-  });
-
-  const termOrder = ['เทอม 1', 'เทอม 2', 'ทั่วไป'];
-  const sortedTerms = Object.keys(groups).sort((a, b) => {
-    const ia = termOrder.indexOf(a); const ib = termOrder.indexOf(b);
-    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
-  });
-
-  const showTermLabel = sortedTerms.length > 1 || (sortedTerms.length === 1 && sortedTerms[0] !== 'ทั่วไป');
+  works.forEach(w => { const t = termMap[w.name]||'ทั่วไป'; if(!groups[t]) groups[t]=[]; groups[t].push(w); });
+  const termOrder = ['เทอม 1','เทอม 2','ทั่วไป'];
+  const sortedTerms = Object.keys(groups).sort((a,b) => (termOrder.indexOf(a)<0?99:termOrder.indexOf(a))-(termOrder.indexOf(b)<0?99:termOrder.indexOf(b)));
+  const showLabel = sortedTerms.length > 1 || (sortedTerms.length===1 && sortedTerms[0]!=='ทั่วไป');
+  const container = document.getElementById('workGroups'); container.innerHTML = '';
 
   sortedTerms.forEach(term => {
-    const grpDiv = document.createElement('div');
-    grpDiv.className = 'term-group';
-    if (showTermLabel) {
-      const label = document.createElement('div');
-      label.className = 'term-label';
-      label.textContent = term;
-      grpDiv.appendChild(label);
-    }
-
+    const grp = document.createElement('div'); grp.className='term-group';
+    if (showLabel) { const lbl=document.createElement('div'); lbl.className='term-label'; lbl.textContent=term; grp.appendChild(lbl); }
     groups[term].forEach((w, i) => {
-      const displayName = renames[w.name] || w.name;
-      const dl = deadlines[w.name] || '';
-      const dlInfo = dl ? getDeadlineInfo(dl) : null;
-      const sent = w.submitted;
-
-      const item = document.createElement('div');
-      item.className = 'work-item';
-      item.style.animationDelay = (i * 0.04) + 's';
-      item.innerHTML = `
-        <div class="work-icon ${sent ? 'done' : 'miss'}">${sent ? '✅' : '❌'}</div>
-        <div style="flex:1">
-          <div class="work-name">${esc(displayName)}</div>
-          ${dlInfo ? `<div class="work-dl ${dlInfo.cls}">📅 ${dlInfo.text}</div>` : ''}
-        </div>
-        <div class="work-status ${sent ? 'done' : 'miss'}">${sent ? 'ส่งแล้ว' : 'ยังไม่ส่ง'}</div>
-      `;
-      grpDiv.appendChild(item);
+      const sent = w.submitted, name = renames[w.name]||w.name;
+      const dl = deadlines[w.name] ? getDeadlineInfo(deadlines[w.name]) : null;
+      const item = document.createElement('div'); item.className='work-item'; item.style.animationDelay=(i*.04)+'s';
+      item.innerHTML = '<div class="work-icon ' + (sent?'done':'miss') + '">' + (sent?'✅':'❌') + '</div>' +
+        '<div style="flex:1"><div class="work-name">' + esc(name) + '</div>' +
+        (dl ? '<div class="work-dl ' + dl.cls + '">📅 ' + dl.text + '</div>' : '') + '</div>' +
+        '<div class="work-status ' + (sent?'done':'miss') + '">' + (sent?'ส่งแล้ว':'ยังไม่ส่ง') + '</div>';
+      grp.appendChild(item);
     });
-    container.appendChild(grpDiv);
+    container.appendChild(grp);
   });
+
+  document.getElementById('resultArea').style.display = 'block';
+  window.scrollTo({ top:0, behavior:'smooth' });
 }
 
 // ============================================================
@@ -1239,723 +657,450 @@ function renderWorkGroups(works, renames, deadlines) {
 async function enterAdmin() {
   document.getElementById('searchInput').value = '';
   document.getElementById('resultArea').style.display = 'none';
-
-  showLoading(true);
+  showSkeleton(true);
   try {
-    // Load sheets info
-    const data = await api({ action: 'allSheets' });
-    if (data.success) {
-      sheetsInfo = data.sheets;
-      setCache('sheetsInfo', sheetsInfo);
-      buildAllWorks();
-    }
-  } catch (e) { /* ignore */ }
-  showLoading(false);
-
+    const d = await api({ action:'allSheets' });
+    if (d.success) { sheetsInfo = d.sheets; lcSet('sheetsInfo', sheetsInfo); buildAllWorks(); }
+  } catch(e) {}
+  showSkeleton(false);
   document.getElementById('adminPanel').style.display = 'block';
   populateAdminSelects();
+  renderOverview();
   renderRenameList();
   renderDeadlineList();
-  renderSheetList();
+  renderExtraSheets();
+  document.getElementById('announceInput').value = localStorage.getItem(LS.ANNOUNCE)||'';
   loadAnnouncement();
-  document.getElementById('announceInput').value = localStorage.getItem(LS.ANNOUNCE) || '';
   showToast('🔑 เข้าสู่โหมดครูแล้ว');
-  window.scrollTo({ top: document.getElementById('adminPanel').offsetTop - 20, behavior: 'smooth' });
+  window.scrollTo({ top: document.getElementById('adminPanel').offsetTop-20, behavior:'smooth' });
+}
+function exitAdmin() { document.getElementById('adminPanel').style.display='none'; }
+
+function showAdminTab(tab, btn) {
+  document.querySelectorAll('.atab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.atab').forEach(b => b.classList.remove('active'));
+  document.getElementById('atab-'+tab).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (tab==='heatmap') renderHeatmap();
+  if (tab==='pdfexport') renderPDFSheetList();
+  if (tab==='sheets') renderHideWorks();
+  if (tab==='missing') loadMissing();
+  if (tab==='settings') renderExtraSheets();
 }
 
 function populateAdminSelects() {
-  ['statsSheetSelect', 'missingSheetSelect'].forEach(id => {
-    const sel = document.getElementById(id);
+  ['heatmapSheetSelect','missingSheetSelect','hideSheetSelect'].forEach(id => {
+    const sel = document.getElementById(id); if (!sel) return;
     sel.innerHTML = '<option value="">-- เลือกห้องเรียน --</option>';
     sheetsInfo.forEach(s => {
       const opt = document.createElement('option');
       opt.value = s.sheetName;
-      opt.textContent = `${s.sheetName} (${s.studentCount} คน)`;
+      opt.textContent = formatClass(s.sheetName) + ' (' + s.studentCount + ' คน)';
       sel.appendChild(opt);
     });
   });
 }
 
-function showAdminTab(tab, btn) {
-  document.querySelectorAll('.atab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.atab').forEach(b => b.classList.remove('active'));
-  document.getElementById('atab-' + tab).classList.add('active');
-  if (btn) btn.classList.add('active');
-}
-
-async function loadStats() {
-  const sheet = document.getElementById('statsSheetSelect').value;
-  if (!sheet) return;
-  const el = document.getElementById('statsContent');
-  el.innerHTML = '<div style="color:var(--gray-400);font-size:0.85rem;padding:10px 0">กำลังโหลด...</div>';
-  try {
-    const data = await api({ action: 'classStats', sheet });
-    if (!data.success) { el.innerHTML = `<div style="color:red">${data.error}</div>`; return; }
-    const submitPct = data.totalStudents > 0 ? Math.round(data.fullSubmit / data.totalStudents * 100) : 0;
-
-    // Donut SVG
-    const r = 54, cx = 70, cy = 70, circ = 2 * Math.PI * r;
-    const doneArc = circ * (submitPct / 100);
-    const donutSVG = `
-      <svg width="140" height="140" class="donut-canvas" viewBox="0 0 140 140">
-        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#ffe4e6" stroke-width="18"/>
-        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#ec4899" stroke-width="18"
-          stroke-dasharray="${doneArc} ${circ}" stroke-dashoffset="${circ * 0.25}"
-          stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>
-        <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central"
-          font-size="18" font-weight="700" fill="#db2777" font-family="Poppins">${submitPct}%</text>
-      </svg>`;
-
-    const topMiss = Object.entries(data.missByWork || {})
-      .sort((a, b) => b[1] - a[1]).slice(0, 4);
-
-    el.innerHTML = `
-      <div class="stats-grid">
-        <div class="stat-box"><div class="stat-val">${data.totalStudents}</div><div class="stat-lbl">นักเรียนทั้งหมด</div></div>
-        <div class="stat-box"><div class="stat-val">${data.fullSubmit}</div><div class="stat-lbl">ส่งครบ</div></div>
-        <div class="stat-box"><div class="stat-val">${data.pending}</div><div class="stat-lbl">ค้างส่ง</div></div>
-        <div class="stat-box"><div class="stat-val">${data.visibleWorks}</div><div class="stat-lbl">ชิ้นงาน</div></div>
-      </div>
-      <div class="donut-wrap">
-        ${donutSVG}
-        <div class="donut-legend">
-          <div class="legend-item"><div class="legend-dot" style="background:#ec4899"></div>ส่งครบ ${data.fullSubmit} คน</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#ffe4e6"></div>ค้างส่ง ${data.pending} คน</div>
-        </div>
-      </div>
-      ${topMiss.length > 0 ? `
-        <div style="font-size:0.78rem;font-weight:700;color:#92400e;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px">งานที่ค้างมากสุด</div>
-        ${topMiss.map(([n, c]) => `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:white;border-radius:8px;margin-bottom:6px;font-size:0.85rem;border-left:3px solid #fbbf24">
-            <span>${esc(n)}</span>
-            <span style="background:#fef3c7;color:#92400e;font-weight:700;padding:2px 10px;border-radius:20px;font-size:0.78rem">${c} คน</span>
-          </div>`).join('')}
-      ` : ''}
-    `;
-  } catch (e) { el.innerHTML = `<div style="color:red">${e.message}</div>`; }
-}
-
-async function loadMissing() {
-  const sheet = document.getElementById('missingSheetSelect').value;
-  if (!sheet) return;
-  const el = document.getElementById('missingContent');
-  el.innerHTML = '<div style="color:var(--gray-400);font-size:0.85rem;padding:8px 0">กำลังโหลด...</div>';
-  try {
-    const data = await api({ action: 'classStats', sheet });
-    if (!data.success) { el.innerHTML = `<div style="color:red">${data.error}</div>`; return; }
-    if (data.missingStudents.length === 0) {
-      el.innerHTML = '<div style="color:var(--green-600);text-align:center;padding:16px">🎉 ทุกคนส่งครบแล้ว!</div>';
-      return;
-    }
-    el.innerHTML = data.missingStudents.map(s => `
-      <div class="missing-row">
-        <div><div class="missing-name">${esc(s.name)}</div><div class="missing-meta">รหัส ${esc(s.id)}</div></div>
-        <span class="missing-cnt">ค้าง ${s.missCnt}</span>
-      </div>`).join('');
-  } catch (e) { el.innerHTML = `<div style="color:red">${e.message}</div>`; }
-}
-
-async function adminSearch() {
-  const q = document.getElementById('adminSearchInput').value.trim();
-  if (!q) return;
-  const el = document.getElementById('adminSearchResult');
-  el.innerHTML = '<div style="color:var(--gray-400);font-size:0.85rem">กำลังค้นหา...</div>';
-  try {
-    const data = await api({ action: 'search', q });
-    if (!data.success) { el.innerHTML = `<div style="color:var(--red-600)">${data.error}</div>`; return; }
-    const renames = getLS(LS.RENAMES, {});
-    el.innerHTML = data.students.map(s => {
-      const done = s.works.filter(w => w.submitted).length;
-      const total = s.works.length;
-      const pct = total > 0 ? Math.round(done / total * 100) : 0;
-      return `
-        <div style="background:var(--amber-100);border-radius:var(--r-sm);padding:14px;margin-bottom:8px">
-          <div style="font-weight:600;margin-bottom:4px">${esc(s.name)} <span style="font-size:0.78rem;color:#b45309">· ห้อง ${esc(s.sheet)}</span></div>
-          <div style="font-size:0.82rem;color:#92400e;margin-bottom:8px">รหัส: ${esc(s.id)} · ส่งแล้ว ${done}/${total} (${pct}%)</div>
-          ${s.works.map(w => `
-            <span style="display:inline-block;background:${w.submitted ? '#dcfce7' : '#fee2e2'};color:${w.submitted ? '#16a34a' : '#dc2626'};
-              font-size:0.72rem;font-weight:600;padding:2px 8px;border-radius:20px;margin:2px">
-              ${w.submitted ? '✅' : '❌'} ${esc(renames[w.name] || w.name)}
-            </span>`).join('')}
-        </div>`;
-    }).join('');
-  } catch (e) { el.innerHTML = `<div style="color:var(--red-600)">${e.message}</div>`; }
-}
-
-function renderSheetList() {
-  const el = document.getElementById('sheetList');
-  if (sheetsInfo.length === 0) {
-    el.innerHTML = '<div style="color:var(--gray-400);font-size:0.85rem">ยังไม่ได้โหลดข้อมูล</div>';
-    return;
+// ============================================================
+//  OVERVIEW + HEATMAP
+// ============================================================
+async function renderOverview() {
+  const grid = document.getElementById('overviewGrid');
+  grid.innerHTML = '<div style="color:var(--gray-400);font-size:.85rem">กำลังโหลด...</div>';
+  const statsAll = [];
+  for (const s of sheetsInfo) {
+    try {
+      const d = await api({ action:'classStats', sheet: s.sheetName });
+      if (d.success) statsAll.push(d);
+    } catch(e) {}
   }
-  el.innerHTML = sheetsInfo.map(s => `
-    <div class="sheet-row">
-      <div>
-        <div class="sheet-name">${esc(s.sheetName)}</div>
-        <div class="sheet-count">${s.studentCount} คน · ${s.workCount} ชิ้นงาน</div>
-      </div>
-    </div>`).join('');
-}
-
-function renderRenameList() {
-  const renames = getLS(LS.RENAMES, {});
-  const el = document.getElementById('renameList');
-  if (allWorksFlat.length === 0) {
-    el.innerHTML = '<div style="color:var(--gray-400);font-size:0.85rem">ยังไม่ได้โหลดข้อมูลชิ้นงาน</div>';
-    return;
-  }
-  el.innerHTML = allWorksFlat.map(h => `
-    <div class="config-row">
-      <span class="config-orig" title="${esc(h)}">${esc(h)}</span>
-      <input class="config-input" placeholder="ชื่อย่อบนเว็บ" value="${esc(renames[h] || '')}" data-orig="${esc(h)}">
-    </div>`).join('');
-}
-
-function saveRenames() {
-  const renames = {};
-  document.querySelectorAll('#renameList .config-input').forEach(inp => {
-    const orig = inp.getAttribute('data-orig');
-    const val = inp.value.trim();
-    if (val) renames[orig] = val;
-  });
-  localStorage.setItem(LS.RENAMES, JSON.stringify(renames));
-  showToast('✅ บันทึกชื่องานแล้ว');
-}
-
-function renderDeadlineList() {
-  const deadlines = getLS(LS.DEADLINES, {});
-  const terms = getLS('art_terms', {});
-  const el = document.getElementById('deadlineList');
-  if (allWorksFlat.length === 0) {
-    el.innerHTML = '<div style="color:var(--gray-400);font-size:0.85rem">ยังไม่ได้โหลดข้อมูลชิ้นงาน</div>';
-    return;
-  }
-  el.innerHTML = allWorksFlat.map(h => {
-    const renames = getLS(LS.RENAMES, {});
-    const displayName = renames[h] || h;
-    return `
-      <div class="config-row" style="gap:6px">
-        <span class="config-orig" style="width:100px" title="${esc(h)}">${esc(displayName)}</span>
-        <input type="date" class="config-input dl-input" style="flex:1" value="${deadlines[h] || ''}" data-orig="${esc(h)}">
-        <select class="config-select term-select" data-orig="${esc(h)}">
-          <option value="ทั่วไป" ${(terms[h]||'ทั่วไป')==='ทั่วไป'?'selected':''}>ทั่วไป</option>
-          <option value="เทอม 1" ${terms[h]==='เทอม 1'?'selected':''}>เทอม 1</option>
-          <option value="เทอม 2" ${terms[h]==='เทอม 2'?'selected':''}>เทอม 2</option>
-        </select>
-      </div>`;
+  grid.innerHTML = statsAll.map(d => {
+    const pct = d.totalStudents > 0 ? Math.round(d.fullSubmit/d.totalStudents*100) : 0;
+    const cls = pct>=80?'high':pct>=50?'mid':'low';
+    return '<div class="overview-card" onclick="drillDownHeatmap(\'' + d.sheetName + '\')">' +
+      '<div class="ov-class">' + formatClass(d.sheetName) + '</div>' +
+      '<div class="ov-pct ' + cls + '">' + pct + '%</div>' +
+      '<div class="ov-sub">ส่งครบ ' + d.fullSubmit + '/' + d.totalStudents + ' คน</div>' +
+      '<div class="ov-bar"><div class="ov-bar-fill" style="width:' + pct + '%"></div></div>' +
+      '</div>';
   }).join('');
 }
 
-function saveDeadlines() {
-  const deadlines = {};
-  const terms = {};
-  document.querySelectorAll('.dl-input').forEach(inp => {
-    const orig = inp.getAttribute('data-orig');
-    if (inp.value) deadlines[orig] = inp.value;
-  });
-  document.querySelectorAll('.term-select').forEach(sel => {
-    const orig = sel.getAttribute('data-orig');
-    if (sel.value && sel.value !== 'ทั่วไป') terms[orig] = sel.value;
-  });
-  localStorage.setItem(LS.DEADLINES, JSON.stringify(deadlines));
-  localStorage.setItem('art_terms', JSON.stringify(terms));
-  showToast('✅ บันทึก Deadline และกลุ่มเทอมแล้ว');
+function drillDownHeatmap(sheetName) {
+  showAdminTab('heatmap', document.querySelector('.atab:nth-child(2)'));
+  document.getElementById('heatmapSheetSelect').value = sheetName;
+  renderHeatmap();
 }
 
-function saveAnnounce() {
-  const txt = document.getElementById('announceInput').value.trim();
-  localStorage.setItem(LS.ANNOUNCE, txt);
-  loadAnnouncement();
-  showToast('✅ บันทึกประกาศแล้ว');
-}
-function clearAnnounce() {
-  localStorage.removeItem(LS.ANNOUNCE);
-  document.getElementById('announceInput').value = '';
-  loadAnnouncement();
-  showToast('🗑️ ลบประกาศแล้ว');
-}
-function loadAnnouncement() {
-  const txt = localStorage.getItem(LS.ANNOUNCE) || '';
-  const bar = document.getElementById('announceBar');
-  if (txt) {
-    document.getElementById('announceText').textContent = txt;
-    bar.style.display = 'flex';
-  } else { bar.style.display = 'none'; }
-}
-
-async function exportMissingCSV() {
-  const sheet = document.getElementById('missingSheetSelect').value;
-  if (!sheet) { showToast('⚠️ กรุณาเลือกห้องก่อน'); return; }
+async function renderHeatmap() {
+  const sheet = document.getElementById('heatmapSheetSelect').value;
+  const wrap = document.getElementById('heatmapWrap');
+  if (!sheet) { wrap.innerHTML = '<div style="color:var(--gray-400);font-size:.85rem">เลือกห้องเพื่อดู Heatmap</div>'; return; }
+  wrap.innerHTML = '<div style="color:var(--gray-400);font-size:.85rem">กำลังโหลด...</div>';
   try {
-    const data = await api({ action: 'classStats', sheet });
-    if (!data.success) return;
-    const rows = [['รหัส', 'ชื่อ', 'จำนวนค้างส่ง']];
-    data.missingStudents.forEach(s => rows.push([s.id, s.name, s.missCnt]));
-    const csv = '\ufeff' + rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = `ค้างส่ง_${sheet}.csv`; a.click();
-    showToast('⬇️ ดาวน์โหลด CSV แล้ว');
-  } catch (e) { showToast('⚠️ ' + e.message); }
-}
+    const d = await api({ action:'classStats', sheet });
+    if (!d.success) { wrap.innerHTML = '<div style="color:red">' + d.error + '</div>'; return; }
 
-// ============================================================
-//  EXPORT PDF
-// ============================================================
-function exportPDF() {
-  if (!currentStudent) return;
-  const renames   = getLS(LS.RENAMES, {});
-  const deadlines = getLS(LS.DEADLINES, {});
-  const works = currentStudent.works || [];
-  let done = 0, miss = 0;
-  const rows = works.map(w => {
-    const sent = w.submitted;
-    if (sent) done++; else miss++;
-    const name = renames[w.name] || w.name;
-    const dl = deadlines[w.name] ? `กำหนด: ${deadlines[w.name]}` : '';
-    return `<tr>
-      <td>${esc(name)}</td>
-      <td style="text-align:center;color:#a3a3a3;font-size:0.85em">${dl}</td>
-      <td style="text-align:center;font-weight:700;color:${sent ? '#16a34a' : '#dc2626'}">${sent ? '✅ ส่งแล้ว' : '❌ ยังไม่ส่ง'}</td>
-    </tr>`;
-  }).join('');
-  const pct = (done + miss) > 0 ? Math.round(done / (done + miss) * 100) : 0;
-  const html = `<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8">
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body{font-family:'Prompt',sans-serif;padding:32px;max-width:580px;margin:0 auto;color:#1a1a1a}
-    h1{color:#db2777;font-size:1.3rem;margin-bottom:4px}
-    .meta{color:#a3a3a3;font-size:0.82rem;margin-bottom:12px}
-    .prog-bg{background:#fce7f3;border-radius:8px;height:10px;margin:8px 0 14px}
-    .prog-fg{background:#ec4899;height:100%;border-radius:8px}
-    table{width:100%;border-collapse:collapse;font-size:0.88rem}
-    th{background:#fdf2f8;padding:9px;text-align:left;border-bottom:2px solid #fbcfe8}
-    td{padding:8px 10px;border-bottom:1px solid #f5f5f5}
-    .footer{margin-top:18px;font-size:0.72rem;color:#a3a3a3;text-align:center}
-  </style></head><body>
-  <h1>🎨 สรุปสถานะการส่งงานวิชาศิลปะ</h1>
-  <div class="meta">${esc(currentStudent.name)} · รหัส ${esc(currentStudent.id)} · ห้อง ${esc(currentStudent.sheet)}</div>
-  <div class="prog-bg"><div class="prog-fg" style="width:${pct}%"></div></div>
-  <div style="font-size:0.85rem;color:#db2777;margin-bottom:14px">ส่งงานแล้ว ${pct}% (${done}/${done+miss} ชิ้น)</div>
-  <table><thead><tr><th>ชิ้นงาน</th><th>กำหนดส่ง</th><th>สถานะ</th></tr></thead>
-  <tbody>${rows}</tbody></table>
-  <div class="footer">พิมพ์เมื่อ ${new Date().toLocaleString('th-TH')}</div>
-  </body></html>`;
-  const w = window.open('', '_blank');
-  if (w) { w.document.write(html); w.document.close(); setTimeout(() => w.print(), 600); }
-  else showToast('⚠️ กรุณาอนุญาต Pop-up ก่อน');
-}
+    // ดึงข้อมูลนักเรียนทั้งห้อง
+    const search = await api({ action:'search', q:'', sheet });
+    // เนื่องจาก search ต้องการ query ใช้วิธีอื่น — ดึงจาก missing + fullSubmit
+    const renames = getLS(LS.RENAMES, {});
+    const headers = sheetsInfo.find(s=>s.sheetName===sheet)?.headers || [];
 
-// ============================================================
-//  QR & SHARE
-// ============================================================
-let qrRendered = false;
-function toggleQR() {
-  const wrap = document.getElementById('qrWrap');
-  if (wrap.style.display === 'block') { wrap.style.display = 'none'; return; }
-  wrap.style.display = 'block';
-  if (!qrRendered) {
-    document.getElementById('qrcode').innerHTML = '';
-    new QRCode(document.getElementById('qrcode'), {
-      text: location.href, width: 180, height: 180,
-      colorDark: '#db2777', colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.M
+    // Build table จาก missingStudents + stats
+    let html = '<table class="heatmap-table"><thead><tr><th class="name-col">ชื่อ</th>';
+    headers.forEach(h => { html += '<th title="' + esc(h) + '">' + esc(renames[h]||h).substring(0,8) + '</th>'; });
+    html += '</tr></thead><tbody>';
+
+    // แสดง missing students ก่อน
+    d.missingStudents.forEach(stu => {
+      html += '<tr><td class="td-name">' + esc(stu.name) + '</td>';
+      headers.forEach(() => { html += '<td><div class="hm-cell miss">❌</div></td>'; });
+      html += '</tr>';
     });
-    qrRendered = true;
-  }
+
+    html += '</tbody></table>';
+    html += '<div style="font-size:.75rem;color:var(--gray-400);margin-top:8px">แสดงเฉพาะนักเรียนที่ค้างส่ง ' + d.missingStudents.length + ' คน จากทั้งหมด ' + d.totalStudents + ' คน</div>';
+    wrap.innerHTML = html;
+  } catch(e) { wrap.innerHTML = '<div style="color:red">' + e.message + '</div>'; }
 }
 
-function genShareLink() {
+// ============================================================
+//  PDF EXPORT (ห้องเรียน)
+// ============================================================
+function renderPDFSheetList() {
+  const el = document.getElementById('pdfSheetList');
+  el.innerHTML = sheetsInfo.map(s => `
+    <div class="pdf-sheet-row">
+      <label><input type="checkbox" class="pdf-sheet-cb" value="${esc(s.sheetName)}" checked>
+      ${esc(formatClass(s.sheetName))} (${s.studentCount} คน)</label>
+    </div>`).join('');
+}
+function selectAllSheetsPDF(v) {
+  document.querySelectorAll('.pdf-sheet-cb').forEach(cb => cb.checked = v);
+}
+async function exportPDFClass() {
+  const selected = Array.from(document.querySelectorAll('.pdf-sheet-cb:checked')).map(cb => cb.value);
+  if (selected.length === 0) { showToast('⚠️ เลือกห้องอย่างน้อย 1 ห้อง'); return; }
+  showToast('⏳ กำลังสร้าง PDF...');
+
+  const renames = getLS(LS.RENAMES, {});
+  let allHTML = '';
+
+  for (const sheetName of selected) {
+    try {
+      const d = await api({ action:'classStats', sheet: sheetName });
+      if (!d.success) continue;
+      const headers = sheetsInfo.find(s=>s.sheetName===sheetName)?.headers || [];
+      const pct = d.totalStudents > 0 ? Math.round(d.fullSubmit/d.totalStudents*100) : 0;
+
+      allHTML += `<div style="page-break-after:always;padding:24px;font-family:Prompt,sans-serif">
+        <h2 style="color:#db2777;margin-bottom:4px">🎨 รายงานห้อง ${formatClass(sheetName)}</h2>
+        <div style="font-size:.85rem;color:#a3a3a3;margin-bottom:12px">ส่งครบ ${d.fullSubmit}/${d.totalStudents} คน (${pct}%)</div>
+        <div style="background:#fce7f3;border-radius:8px;height:10px;margin-bottom:16px">
+          <div style="background:#ec4899;height:100%;border-radius:8px;width:${pct}%"></div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:.85rem">
+          <thead><tr style="background:#fdf2f8">
+            <th style="padding:8px;text-align:left;border-bottom:2px solid #fbcfe8">ชื่อ</th>
+            <th style="padding:8px;text-align:center;border-bottom:2px solid #fbcfe8">ค้างส่ง</th>
+          </tr></thead><tbody>
+          ${d.missingStudents.map(s => `<tr><td style="padding:8px;border-bottom:1px solid #f5f5f5">${esc(s.name)}</td><td style="padding:8px;text-align:center;border-bottom:1px solid #f5f5f5;color:#dc2626;font-weight:700">${s.missCnt} ชิ้น</td></tr>`).join('')}
+          </tbody>
+        </table>
+        <div style="margin-top:12px;font-size:.75rem;color:#a3a3a3">พิมพ์เมื่อ ${new Date().toLocaleString('th-TH')}</div>
+      </div>`;
+    } catch(e) {}
+  }
+
+  const w = window.open('','_blank');
+  if (w) {
+    w.document.write('<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}body{margin:0}</style></head><body>' + allHTML + '</body></html>');
+    w.document.close();
+    setTimeout(() => w.print(), 800);
+  } else showToast('⚠️ กรุณาอนุญาต Pop-up');
+}
+
+// ============================================================
+//  PDF STUDENT
+// ============================================================
+function exportPDFStudent() {
   if (!currentStudent) return;
-  const url = location.origin + location.pathname + '?id=' + encodeURIComponent(currentStudent.id);
-  const box = document.getElementById('shareLinkBox');
-  box.style.display = 'block';
-  box.innerHTML = `<span>🔗 </span><a href="${url}" style="color:var(--pink-600)">${url}</a>`;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => showToast('📋 คัดลอกลิงก์แล้ว!'));
-  }
+  const renames = getLS(LS.RENAMES,{}), deadlines = getLS(LS.DEADLINES,{});
+  const works = currentStudent.works||[];
+  let done=0, miss=0;
+  const rows = works.map(w => {
+    const sent=w.submitted; sent?done++:miss++;
+    const name=renames[w.name]||w.name, dl=deadlines[w.name]?'กำหนด: '+deadlines[w.name]:'';
+    return '<tr><td style="padding:8px;border-bottom:1px solid #f5f5f5">' + esc(name) + '</td>' +
+      '<td style="padding:8px;text-align:center;font-size:.82em;color:#a3a3a3;border-bottom:1px solid #f5f5f5">' + dl + '</td>' +
+      '<td style="padding:8px;text-align:center;font-weight:700;color:' + (sent?'#16a34a':'#dc2626') + ';border-bottom:1px solid #f5f5f5">' + (sent?'✅ ส่งแล้ว':'❌ ยังไม่ส่ง') + '</td></tr>';
+  }).join('');
+  const pct = (done+miss)>0?Math.round(done/(done+miss)*100):0;
+  const html = '<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet"></head><body style="font-family:Prompt,sans-serif;padding:32px;max-width:580px;margin:0 auto">' +
+    '<h1 style="color:#db2777;font-size:1.3rem;margin-bottom:4px">🎨 สรุปสถานะการส่งงานวิชาศิลปะ</h1>' +
+    '<div style="color:#a3a3a3;font-size:.82rem;margin-bottom:12px">' + esc(currentStudent.name) + ' · รหัส ' + esc(currentStudent.id) + ' · ห้อง ' + formatClass(currentStudent.sheet) + '</div>' +
+    '<div style="background:#fce7f3;border-radius:8px;height:10px;margin-bottom:14px"><div style="background:#ec4899;height:100%;border-radius:8px;width:' + pct + '%"></div></div>' +
+    '<div style="font-size:.85rem;color:#db2777;margin-bottom:14px">ส่งแล้ว ' + pct + '% (' + done + '/' + (done+miss) + ' ชิ้น)</div>' +
+    '<table style="width:100%;border-collapse:collapse;font-size:.88rem"><thead><tr style="background:#fdf2f8"><th style="padding:9px;text-align:left;border-bottom:2px solid #fbcfe8">ชิ้นงาน</th><th style="padding:9px;border-bottom:2px solid #fbcfe8">กำหนดส่ง</th><th style="padding:9px;border-bottom:2px solid #fbcfe8">สถานะ</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+    '<div style="margin-top:18px;font-size:.72rem;color:#a3a3a3;text-align:center">พิมพ์เมื่อ ' + new Date().toLocaleString('th-TH') + '</div></body></html>';
+  const w = window.open('','_blank');
+  if (w) { w.document.write(html); w.document.close(); setTimeout(()=>w.print(),600); }
+  else showToast('⚠️ กรุณาอนุญาต Pop-up');
 }
 
 // ============================================================
-//  CACHE
+//  HIDE/SHOW WORKS
 // ============================================================
-function setCache(key, val) {
-  try {
-    localStorage.setItem('art_c_' + key, JSON.stringify({ ts: Date.now(), val }));
-  } catch (e) {}
+function renderHideWorks() {
+  const sheetName = document.getElementById('hideSheetSelect').value;
+  const el = document.getElementById('hideWorksList'), btn = document.getElementById('btnSaveHidden');
+  if (!sheetName) { el.innerHTML=''; btn.style.display='none'; return; }
+  const sheetData = sheetsInfo.find(s=>s.sheetName===sheetName);
+  if (!sheetData||!sheetData.headers?.length) { el.innerHTML='<div style="color:var(--gray-400);font-size:.85rem">ไม่พบชิ้นงาน</div>'; return; }
+  const hiddenList = sheetData.hiddenWorks||[], renames = getLS(LS.RENAMES,{});
+  el.innerHTML = sheetData.headers.map(h => {
+    const isHidden=hiddenList.includes(h), display=renames[h]||h;
+    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:white;border-radius:10px;margin-bottom:7px;border:1.5px solid ' + (isHidden?'#fca5a5':'#bbf7d0') + ';box-shadow:0 1px 4px rgba(0,0,0,.05)">' +
+      '<label style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer">' +
+      '<input type="checkbox" class="hide-work-cb" data-work="' + esc(h) + '" ' + (isHidden?'':'checked') + ' style="width:18px;height:18px;accent-color:#ec4899;cursor:pointer">' +
+      '<span style="font-size:.9rem;font-weight:500">' + esc(display) + '</span></label>' +
+      '<span style="font-size:.75rem;font-weight:600;padding:2px 10px;border-radius:20px;background:' + (isHidden?'#fee2e2':'#dcfce7') + ';color:' + (isHidden?'#dc2626':'#16a34a') + '">' + (isHidden?'🙈 ซ่อน':'👁️ แสดง') + '</span></div>';
+  }).join('');
+  btn.style.display='block';
+  el.querySelectorAll('.hide-work-cb').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const row=cb.closest('div'), badge=row.querySelector('span:last-child');
+      if (cb.checked) { row.style.borderColor='#bbf7d0'; badge.style.background='#dcfce7'; badge.style.color='#16a34a'; badge.textContent='👁️ แสดง'; }
+      else { row.style.borderColor='#fca5a5'; badge.style.background='#fee2e2'; badge.style.color='#dc2626'; badge.textContent='🙈 ซ่อน'; }
+    });
+  });
 }
-function getCache(key) {
+async function saveHiddenWorks() {
+  const sheetName = document.getElementById('hideSheetSelect').value;
+  if (!sheetName) return;
+  const hiddenWorks = Array.from(document.querySelectorAll('.hide-work-cb')).filter(cb=>!cb.checked).map(cb=>cb.getAttribute('data-work'));
   try {
-    const raw = localStorage.getItem('art_c_' + key);
-    if (!raw) return null;
-    const obj = JSON.parse(raw);
-    if (Date.now() - obj.ts > CACHE_TTL) return null;
-    return obj.val;
-  } catch (e) { return null; }
+    const d = await apiPost({ action:'saveHidden', sheetName, hiddenWorks });
+    if (d.success||d.cleared) { const s=sheetsInfo.find(x=>x.sheetName===sheetName); if(s) s.hiddenWorks=hiddenWorks; showToast('✅ บันทึกแล้ว'); }
+    else showToast('⚠️ '+(d.error||'บันทึกไม่สำเร็จ'));
+  } catch(e) { showToast('⚠️ '+e.message); }
 }
-function clearCache() {
-  Object.keys(localStorage).filter(k => k.startsWith('art_c_')).forEach(k => localStorage.removeItem(k));
-  document.getElementById('cacheBanner').style.display = 'none';
+
+// ============================================================
+//  RENAME + DEADLINE
+// ============================================================
+function renderRenameList() {
+  const renames=getLS(LS.RENAMES,{}), el=document.getElementById('renameList');
+  if (!allWorksFlat.length) { el.innerHTML='<div style="color:var(--gray-400);font-size:.85rem">ยังไม่ได้โหลดข้อมูล</div>'; return; }
+  el.innerHTML = allWorksFlat.map(h => '<div class="config-row"><span class="config-orig" title="'+esc(h)+'">'+esc(h)+'</span><input class="config-input" placeholder="ชื่อย่อ" value="'+esc(renames[h]||'')+'" data-orig="'+esc(h)+'"></div>').join('');
+}
+function saveRenames() {
+  const renames={};
+  document.querySelectorAll('#renameList .config-input').forEach(inp => { const v=inp.value.trim(); if(v) renames[inp.getAttribute('data-orig')]=v; });
+  localStorage.setItem(LS.RENAMES, JSON.stringify(renames)); showToast('✅ บันทึกชื่องานแล้ว');
+}
+function renderDeadlineList() {
+  const deadlines=getLS(LS.DEADLINES,{}), terms=getLS(LS.TERMS,{}), renames=getLS(LS.RENAMES,{}), el=document.getElementById('deadlineList');
+  if (!allWorksFlat.length) { el.innerHTML='<div style="color:var(--gray-400);font-size:.85rem">ยังไม่ได้โหลดข้อมูล</div>'; return; }
+  el.innerHTML = allWorksFlat.map(h => '<div class="config-row" style="gap:6px"><span class="config-orig" style="width:100px" title="'+esc(h)+'">'+esc(renames[h]||h)+'</span><input type="date" class="config-input dl-input" style="flex:1" value="'+(deadlines[h]||'')+'" data-orig="'+esc(h)+'"><select class="config-select term-select" data-orig="'+esc(h)+'"><option value="ทั่วไป" '+((!terms[h]||terms[h]==='ทั่วไป')?'selected':'')+'>ทั่วไป</option><option value="เทอม 1" '+(terms[h]==='เทอม 1'?'selected':'')+'>เทอม 1</option><option value="เทอม 2" '+(terms[h]==='เทอม 2'?'selected':'')+'>เทอม 2</option></select></div>').join('');
+}
+function saveDeadlines() {
+  const deadlines={}, terms={};
+  document.querySelectorAll('.dl-input').forEach(inp => { if(inp.value) deadlines[inp.getAttribute('data-orig')]=inp.value; });
+  document.querySelectorAll('.term-select').forEach(sel => { if(sel.value&&sel.value!=='ทั่วไป') terms[sel.getAttribute('data-orig')]=sel.value; });
+  localStorage.setItem(LS.DEADLINES, JSON.stringify(deadlines));
+  localStorage.setItem(LS.TERMS, JSON.stringify(terms));
+  showToast('✅ บันทึก Deadline แล้ว');
+}
+
+// ============================================================
+//  ANNOUNCE
+// ============================================================
+function saveAnnounce() { localStorage.setItem(LS.ANNOUNCE, document.getElementById('announceInput').value.trim()); loadAnnouncement(); showToast('✅ บันทึกประกาศแล้ว'); }
+function clearAnnounce() { localStorage.removeItem(LS.ANNOUNCE); document.getElementById('announceInput').value=''; loadAnnouncement(); showToast('🗑️ ลบประกาศแล้ว'); }
+function loadAnnouncement() {
+  const txt=localStorage.getItem(LS.ANNOUNCE)||'', bar=document.getElementById('announceBar');
+  if (txt) { document.getElementById('announceText').textContent=txt; bar.style.display='flex'; } else bar.style.display='none';
+}
+
+// ============================================================
+//  MISSING
+// ============================================================
+async function loadMissing() {
+  const sheet=document.getElementById('missingSheetSelect').value, el=document.getElementById('missingContent');
+  if (!sheet) return;
+  el.innerHTML='<div style="color:var(--gray-400);font-size:.85rem">กำลังโหลด...</div>';
+  try {
+    const d = await api({ action:'classStats', sheet });
+    if (!d.success) { el.innerHTML='<div style="color:red">'+d.error+'</div>'; return; }
+    if (!d.missingStudents.length) { el.innerHTML='<div style="color:var(--green-600);text-align:center;padding:16px">🎉 ทุกคนส่งครบแล้ว!</div>'; return; }
+    el.innerHTML = d.missingStudents.map(s => '<div class="missing-row"><div><div class="missing-name">'+esc(s.name)+'</div><div class="missing-meta">รหัส '+esc(s.id)+'</div></div><span class="missing-cnt">ค้าง '+s.missCnt+'</span></div>').join('');
+  } catch(e) { el.innerHTML='<div style="color:red">'+e.message+'</div>'; }
+}
+async function exportMissingCSV() {
+  const sheet=document.getElementById('missingSheetSelect').value;
+  if (!sheet) { showToast('⚠️ เลือกห้องก่อน'); return; }
+  try {
+    const d = await api({ action:'classStats', sheet });
+    if (!d.success) return;
+    const csv = '\ufeff' + [['รหัส','ชื่อ','จำนวนค้างส่ง']].concat(d.missingStudents.map(s=>[s.id,s.name,s.missCnt])).map(r=>r.map(c=>'"'+c+'"').join(',')).join('\n');
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+    a.download='ค้างส่ง_'+sheet+'.csv'; a.click(); showToast('⬇️ ดาวน์โหลด CSV แล้ว');
+  } catch(e) { showToast('⚠️ '+e.message); }
+}
+
+// ============================================================
+//  ADMIN SEARCH
+// ============================================================
+async function adminSearch() {
+  const q=document.getElementById('adminSearchInput').value.trim(), el=document.getElementById('adminSearchResult');
+  if (!q) return;
+  el.innerHTML='<div style="color:var(--gray-400);font-size:.85rem">กำลังค้นหา...</div>';
+  try {
+    const d = await api({ action:'search', q: q.toLowerCase() });
+    if (!d.success) { el.innerHTML='<div style="color:var(--red-600)">'+d.error+'</div>'; return; }
+    const renames=getLS(LS.RENAMES,{});
+    el.innerHTML = d.students.map(s => {
+      const done=s.works.filter(w=>w.submitted).length, total=s.works.length, pct=total>0?Math.round(done/total*100):0;
+      return '<div style="background:var(--amber-100);border-radius:var(--r-sm);padding:14px;margin-bottom:8px">' +
+        '<div style="font-weight:600;margin-bottom:4px">'+esc(s.name)+' <span style="font-size:.78rem;color:#b45309">· ห้อง '+formatClass(s.sheet)+'</span></div>' +
+        '<div style="font-size:.82rem;color:#92400e;margin-bottom:8px">รหัส: '+esc(s.id)+' · ส่ง '+done+'/'+total+' ('+pct+'%)</div>' +
+        s.works.map(w=>'<span style="display:inline-block;background:'+(w.submitted?'#dcfce7':'#fee2e2')+';color:'+(w.submitted?'#16a34a':'#dc2626')+';font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:20px;margin:2px">'+(w.submitted?'✅':'❌')+' '+esc(renames[w.name]||w.name)+'</span>').join('') +
+        '</div>';
+    }).join('');
+  } catch(e) { el.innerHTML='<div style="color:var(--red-600)">'+e.message+'</div>'; }
+}
+
+// ============================================================
+//  ADMIN PASS CHANGE
+// ============================================================
+function changeAdminPass() {
+  const old=document.getElementById('oldPassInput').value;
+  const cur=localStorage.getItem(LS.ADMIN_PASS)||DEFAULT_ADMIN_PASS;
+  if (old!==cur) { showToast('⚠️ รหัสเดิมไม่ถูกต้อง'); return; }
+  const nw=document.getElementById('newPassInput').value, cf=document.getElementById('confirmPassInput').value;
+  if (!nw||nw.length<6) { showToast('⚠️ รหัสใหม่ต้องมีอย่างน้อย 6 ตัว'); return; }
+  if (nw!==cf) { showToast('⚠️ รหัสใหม่ไม่ตรงกัน'); return; }
+  localStorage.setItem(LS.ADMIN_PASS, nw);
+  document.getElementById('oldPassInput').value='';
+  document.getElementById('newPassInput').value='';
+  document.getElementById('confirmPassInput').value='';
+  showToast('✅ เปลี่ยนรหัส Admin แล้ว');
+}
+
+// ============================================================
+//  EXTRA SHEETS
+// ============================================================
+function getExtraSheets() { return getLS(LS.EXTRA,[]); }
+function addExtraSheet() {
+  const label=document.getElementById('newSheetLabel').value.trim(), url=document.getElementById('newSheetUrl').value.trim();
+  if (!label||!url) { showToast('⚠️ กรอกให้ครบ'); return; }
+  if (!url.includes('script.google.com')) { showToast('⚠️ ต้องใช้ Apps Script URL ไม่ใช่ URL ของ Sheets'); return; }
+  const list=getExtraSheets();
+  if (list.find(s=>s.url===url)) { showToast('⚠️ เพิ่มไปแล้ว'); return; }
+  list.push({label,url}); localStorage.setItem(LS.EXTRA,JSON.stringify(list));
+  document.getElementById('newSheetLabel').value=''; document.getElementById('newSheetUrl').value='';
+  renderExtraSheets(); showToast('✅ เพิ่ม '+label+' แล้ว');
+}
+function removeExtraSheet(i) { const l=getExtraSheets(); l.splice(i,1); localStorage.setItem(LS.EXTRA,JSON.stringify(l)); renderExtraSheets(); showToast('🗑️ ลบแล้ว'); }
+function renderExtraSheets() {
+  const el=document.getElementById('extraSheetsList'); if (!el) return;
+  const list=getExtraSheets();
+  if (!list.length) { el.innerHTML='<div style="color:var(--gray-400);font-size:.82rem;margin-bottom:8px">ยังไม่มี Spreadsheet เพิ่มเติม</div>'; return; }
+  el.innerHTML = list.map((s,i) => '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--amber-100);border-radius:var(--r-sm);margin-bottom:8px"><div style="flex:1"><div style="font-weight:600;color:#92400e;font-size:.9rem">'+esc(s.label)+'</div><div style="font-size:.72rem;color:#b45309;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px">'+esc(s.url)+'</div></div><button onclick="removeExtraSheet('+i+')" style="border:none;background:#fca5a5;color:#dc2626;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:.8rem;font-weight:600">ลบ</button></div>').join('');
+}
+
+// ============================================================
+//  CACHE CLEAR
+// ============================================================
+async function adminClearCache() {
+  try {
+    await api({ action:'clearCache' });
+    Object.keys(localStorage).filter(k=>k.startsWith('art_c_')).forEach(k=>localStorage.removeItem(k));
+    lcRemove('sheetsInfo'); sheetsInfo=[];
+    showToast('🗑️ ล้าง Cache ทั้งหมดแล้ว');
+  } catch(e) { showToast('⚠️ '+e.message); }
+}
+function clearLocalCache() {
+  Object.keys(localStorage).filter(k=>k.startsWith('art_c_')).forEach(k=>localStorage.removeItem(k));
+  document.getElementById('cacheBanner').style.display='none';
   showToast('🔄 ล้าง Cache แล้ว');
 }
-function showCacheBanner() {
-  document.getElementById('cacheBanner').style.display = 'flex';
-  document.getElementById('cacheText').textContent = '⚡ ใช้ข้อมูลที่บันทึกไว้ (กดรีเฟรชเพื่ออัปเดต)';
+
+// ============================================================
+//  QR + SHARE
+// ============================================================
+function toggleQR() {
+  const w=document.getElementById('qrWrap');
+  if (w.style.display==='block') { w.style.display='none'; return; }
+  w.style.display='block';
+  if (!qrRendered) {
+    document.getElementById('qrcode').innerHTML='';
+    new QRCode(document.getElementById('qrcode'),{text:location.href,width:180,height:180,colorDark:'#db2777',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+    qrRendered=true;
+  }
+}
+function genShareLink() {
+  if (!currentStudent) return;
+  const url=location.origin+location.pathname+'?id='+encodeURIComponent(currentStudent.id);
+  const box=document.getElementById('shareLinkBox'); box.style.display='block';
+  box.innerHTML='🔗 <a href="'+url+'" style="color:var(--pink-600)">'+url+'</a>';
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(()=>showToast('📋 คัดลอกลิงก์แล้ว!'));
+}
+
+// ============================================================
+//  LOCAL STORAGE CACHE
+// ============================================================
+function lcSet(k,v) { try { localStorage.setItem('art_c_'+k,JSON.stringify({ts:Date.now(),v})); } catch(e){} }
+function lcGet(k) { try { const r=localStorage.getItem('art_c_'+k); if(!r) return null; const o=JSON.parse(r); return Date.now()-o.ts>CACHE_TTL?null:o.v; } catch(e){return null;} }
+function lcRemove(k) { localStorage.removeItem('art_c_'+k); }
+function getLS(k,d) { try { return JSON.parse(localStorage.getItem(k))||d; } catch(e){return d;} }
+function showCacheBanner() { document.getElementById('cacheBanner').style.display='flex'; document.getElementById('cacheText').textContent='⚡ ใช้ข้อมูลที่บันทึกไว้ (กดรีเฟรชเพื่ออัปเดต)'; }
+
+// ============================================================
+//  SKELETON + LOADING
+// ============================================================
+function showSkeleton(v) {
+  document.getElementById('skeletonBox').style.display = v?'block':'none';
+  document.getElementById('loadingBox').style.display = 'none';
 }
 
 // ============================================================
 //  HELPERS
 // ============================================================
-function getLS(key, def) { try { return JSON.parse(localStorage.getItem(key)) || def; } catch (e) { return def; } }
-
-function getMotivate(pct) {
-  if (pct === 100) return '🏆 ยอดเยี่ยม! ส่งงานครบ 100% แล้ว ขยันมากเลย!';
-  if (pct >= 80)  return '⭐ เก่งมาก! เกือบครบแล้ว อีกนิดเดียว!';
-  if (pct >= 60)  return '💪 ดีมาก! ผ่านครึ่งทางมาแล้ว สู้ต่อไปนะ!';
-  if (pct >= 40)  return '😊 เริ่มต้นดี ค่อยๆ ส่งงานต่อไปนะ!';
-  if (pct >= 20)  return '🌱 มีงานอีกเยอะ เร่งส่งเลยนะ!';
-  return '🚨 ต้องรีบส่งงานด่วนเลย!';
+function formatClass(name) {
+  if (!name) return name;
+  const m = name.match(/^[mMมม]?(\d)(\d{2})$/);
+  return m ? m[1]+'/'+parseInt(m[2]) : name;
 }
-
-function getDeadlineInfo(dateStr) {
-  try {
-    const dl = new Date(dateStr + 'T23:59:59');
-    const diff = dl - Date.now();
-    const days = Math.floor(diff / 86400000);
-    const raw = dateStr;
-    if (diff < 0) return { cls: 'overdue', text: `เลยกำหนด ${Math.abs(days)} วันแล้ว`, raw };
-    if (days === 0) return { cls: 'urgent', text: 'หมดเวลาวันนี้!', raw };
-    if (days <= 3)  return { cls: 'urgent', text: `อีก ${days} วัน`, raw };
-    return { cls: '', text: dl.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }), raw };
-  } catch (e) { return null; }
-}
-
-function getAvatar(name, prefix) {
-
-
-  const p = (prefix || '').trim();
+function getAvatar(prefix) {
+  const p=String(prefix||'').trim();
   if (/เด็กชาย/.test(p)) return '👦';
   if (/เด็กหญิง|นางสาว|นาง/.test(p)) return '👧';
   return '🧑';
 }
-
-function formatClass(name) {
-  // แปลง 301->3/1, 3001->3/1, m301->3/1 ฯลฯ
-  if (!name) return name;
-  const m = name.match(/^[mMมม]?(d)(d{2})$/);
-  if (m) return m[1] + '/' + parseInt(m[2]);
-  return name;
+function getMotivate(pct) {
+  if (pct===100) return '🏆 ยอดเยี่ยม! ส่งงานครบ 100% แล้ว!';
+  if (pct>=80)  return '⭐ เก่งมาก! เกือบครบแล้ว อีกนิดเดียว!';
+  if (pct>=60)  return '💪 ดีมาก! ผ่านครึ่งทางมาแล้ว สู้ต่อไป!';
+  if (pct>=40)  return '😊 เริ่มต้นดี ค่อยๆ ส่งงานต่อไปนะ!';
+  if (pct>=20)  return '🌱 มีงานอีกเยอะ เร่งส่งเลยนะ!';
+  return '🚨 ต้องรีบส่งงานด่วนเลย!';
 }
-
-function esc(str) {
-  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function getDeadlineInfo(dateStr) {
+  try {
+    const dl=new Date(dateStr+'T23:59:59'), diff=dl-Date.now(), days=Math.floor(diff/86400000), raw=dateStr;
+    if (diff<0) return {cls:'overdue',text:'เลยกำหนด '+Math.abs(days)+' วันแล้ว',raw};
+    if (days===0) return {cls:'urgent',text:'หมดเวลาวันนี้!',raw};
+    if (days<=3) return {cls:'urgent',text:'อีก '+days+' วัน',raw};
+    return {cls:'',text:dl.toLocaleDateString('th-TH',{day:'numeric',month:'short'}),raw};
+  } catch(e){return null;}
 }
-
-function showLoading(v) { document.getElementById('loadingBox').style.display = v ? 'block' : 'none'; }
-function showError(msg) {
-  const el = document.getElementById('errorBox');
-  el.textContent = '⚠️ ' + msg; el.style.display = 'block';
-}
-function hideError() { document.getElementById('errorBox').style.display = 'none'; }
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2600);
-}
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showError(msg) { const el=document.getElementById('errorBox'); el.textContent='⚠️ '+msg; el.style.display='block'; }
+function hideError() { document.getElementById('errorBox').style.display='none'; }
+function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
 </script>
 </body>
 </html>
-<script>
-// ===== PATCH: Hide/Show works per sheet (Admin) =====
-function renderHideWorks() {
-  const sheetName = document.getElementById('hideSheetSelect').value;
-  const el = document.getElementById('hideWorksList');
-  const note = document.getElementById('hideWorksNote');
-  const btn = document.getElementById('btnSaveHidden');
-  if (!sheetName) { el.innerHTML = ''; note.textContent = ''; btn.style.display='none'; return; }
-
-  const sheetData = sheetsInfo.find(s => s.sheetName === sheetName);
-  if (!sheetData || !sheetData.headers || sheetData.headers.length === 0) {
-    el.innerHTML = '<div style="color:var(--gray-400);font-size:0.85rem">ไม่พบชิ้นงาน</div>';
-    return;
-  }
-
-  const hiddenList = sheetData.hiddenWorks || [];
-  const renames = getLS(LS.RENAMES, {});
-
-  el.innerHTML = sheetData.headers.map(h => {
-    const isHidden = hiddenList.includes(h);
-    const display = renames[h] || h;
-    return `
-      <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:white;border-radius:10px;margin-bottom:7px;border:1.5px solid ${isHidden ? '#fca5a5' : '#bbf7d0'};box-shadow:0 1px 4px rgba(0,0,0,0.05)">
-        <label style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer">
-          <input type="checkbox" class="hide-work-cb" data-work="${esc(h)}"
-            ${isHidden ? '' : 'checked'}
-            style="width:18px;height:18px;accent-color:#ec4899;cursor:pointer">
-          <span style="font-size:0.9rem;font-weight:500">${esc(display)}</span>
-        </label>
-        <span style="font-size:0.75rem;font-weight:600;padding:2px 10px;border-radius:20px;background:${isHidden ? '#fee2e2' : '#dcfce7'};color:${isHidden ? '#dc2626' : '#16a34a'}">
-          ${isHidden ? '🙈 ซ่อน' : '👁️ แสดง'}
-        </span>
-      </div>`;
-  }).join('');
-
-  note.textContent = `✅ แสดง = นักเรียนเห็น  🙈 ซ่อน = ไม่แสดงในแดชบอร์ด`;
-  btn.style.display = 'block';
-
-  // อัปเดต badge สี real-time เมื่อ toggle
-  el.querySelectorAll('.hide-work-cb').forEach(cb => {
-    cb.addEventListener('change', () => {
-      const row = cb.closest('div');
-      const badge = row.querySelector('span:last-child');
-      if (cb.checked) {
-        row.style.borderColor = '#bbf7d0';
-        badge.style.background = '#dcfce7';
-        badge.style.color = '#16a34a';
-        badge.textContent = '👁️ แสดง';
-      } else {
-        row.style.borderColor = '#fca5a5';
-        badge.style.background = '#fee2e2';
-        badge.style.color = '#dc2626';
-        badge.textContent = '🙈 ซ่อน';
-      }
-    });
-  });
-}
-
-async function saveHiddenWorks() {
-  const sheetName = document.getElementById('hideSheetSelect').value;
-  if (!sheetName) return;
-
-  // checkbox ที่ไม่ได้ check = ซ่อน
-  const hiddenWorks = [];
-  document.querySelectorAll('.hide-work-cb').forEach(cb => {
-    if (!cb.checked) hiddenWorks.push(cb.getAttribute('data-work'));
-  });
-
-  try {
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'saveHidden', sheetName, hiddenWorks }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      // อัปเดต local sheetsInfo ด้วย
-      const s = sheetsInfo.find(x => x.sheetName === sheetName);
-      if (s) s.hiddenWorks = hiddenWorks;
-      showToast('✅ บันทึกการแสดง/ซ่อนแล้ว');
-    } else {
-      showToast('⚠️ ' + (data.error || 'บันทึกไม่สำเร็จ'));
-    }
-  } catch (err) {
-    showToast('⚠️ ' + err.message);
-  }
-}
-
-// ===== PATCH: เพิ่ม hideSheetSelect ใน populateAdminSelects =====
-const _origPopulate = populateAdminSelects;
-populateAdminSelects = function() {
-  _origPopulate();
-  const sel = document.getElementById('hideSheetSelect');
-  if (sel) {
-    sel.innerHTML = '<option value="">-- เลือกห้องเรียน --</option>';
-    sheetsInfo.forEach(s => {
-      const opt = document.createElement('option');
-      opt.value = s.sheetName;
-      opt.textContent = s.sheetName + ' (' + s.studentCount + ' คน)';
-      sel.appendChild(opt);
-    });
-  }
-};
-</script>
-<script>
-// ===== PATCH: Multi-Spreadsheet Support =====
-const LS_EXTRA_SHEETS = 'art_extra_sheets';
-
-function getExtraSheets() {
-  return getLS(LS_EXTRA_SHEETS, []);
-  // format: [{ label: 'ม.1', url: 'https://script.google.com/...' }]
-}
-
-function extractScriptUrl(input) {
-  input = input.trim();
-  // ถ้าเป็น URL ของ Apps Script อยู่แล้ว
-  if (input.includes('script.google.com/macros')) return input;
-  // ถ้าเป็น Spreadsheet URL → แจ้งว่าต้องใช้ Apps Script URL
-  return input;
-}
-
-function addExtraSheet() {
-  const label = document.getElementById('newSheetLabel').value.trim();
-  const url   = document.getElementById('newSheetUrl').value.trim();
-  if (!label || !url) { showToast('⚠️ กรุณากรอกชื่อและ URL ให้ครบ'); return; }
-
-  const scriptUrl = extractScriptUrl(url);
-  if (!scriptUrl.includes('script.google.com')) {
-    showToast('⚠️ ต้องใช้ Apps Script URL (จาก Deploy) ไม่ใช่ URL ของ Sheets');
-    return;
-  }
-
-  const list = getExtraSheets();
-  // เช็คซ้ำ
-  if (list.find(s => s.url === scriptUrl)) { showToast('⚠️ เพิ่มไปแล้ว'); return; }
-  list.push({ label, url: scriptUrl });
-  localStorage.setItem(LS_EXTRA_SHEETS, JSON.stringify(list));
-  document.getElementById('newSheetLabel').value = '';
-  document.getElementById('newSheetUrl').value = '';
-  renderExtraSheets();
-  showToast('✅ เพิ่ม ' + label + ' แล้ว');
-}
-
-function removeExtraSheet(idx) {
-  const list = getExtraSheets();
-  list.splice(idx, 1);
-  localStorage.setItem(LS_EXTRA_SHEETS, JSON.stringify(list));
-  renderExtraSheets();
-  showToast('🗑️ ลบแล้ว');
-}
-
-function renderExtraSheets() {
-  const el = document.getElementById('extraSheetsList');
-  if (!el) return;
-  const list = getExtraSheets();
-  if (list.length === 0) {
-    el.innerHTML = '<div style="color:var(--gray-400);font-size:0.85rem;padding:8px 0">ยังไม่มี Spreadsheet เพิ่มเติม</div>';
-    return;
-  }
-  el.innerHTML = list.map((s, i) => `
-    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--amber-100);border-radius:var(--r-sm);margin-bottom:8px">
-      <div style="flex:1">
-        <div style="font-weight:600;color:#92400e;font-size:0.9rem">${esc(s.label)}</div>
-        <div style="font-size:0.72rem;color:#b45309;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px">${esc(s.url)}</div>
-      </div>
-      <button onclick="removeExtraSheet(${i})" style="border:none;background:#fca5a5;color:#dc2626;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:0.8rem;font-weight:600">ลบ</button>
-    </div>`).join('');
-}
-
-// ===== PATCH: ค้นหาข้าม Spreadsheet หลายอัน =====
-const _origDoSearch = doSearch;
-doSearch = async function() {
-  const raw   = document.getElementById('searchInput').value;
-  const query = raw.trim();
-  if (!query) return;
-  if (query === 'nutdanaichanim') { enterAdmin(); return; }
-
-  hideError();
-  document.getElementById('resultArea').style.display = 'none';
-  document.getElementById('adminPanel').style.display = 'none';
-
-  const cacheKey = 'q_' + query;
-  const cached = getCache(cacheKey);
-  if (cached) { showCacheBanner(); showConfirmModal(cached); return; }
-
-  showLoading(true);
-  try {
-    // ค้นจาก Sheets หลัก
-    const mainData = await api({ action: 'search', q: query });
-    let allStudents = mainData.success ? mainData.students : [];
-
-    // ค้นจาก Extra Sheets
-    const extras = getExtraSheets();
-    for (const extra of extras) {
-      try {
-        const url = extra.url + '?action=search&q=' + encodeURIComponent(query);
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.success && data.students) {
-          // tag sheet name ด้วย label ของ extra
-          allStudents = allStudents.concat(data.students);
-        }
-      } catch (e) { /* ข้าม extra sheet ที่ error */ }
-    }
-
-    if (allStudents.length === 0) {
-      showError('ไม่พบรหัส/ชื่อ "' + query + '" ในระบบ');
-    } else {
-      setCache(cacheKey, allStudents);
-      showConfirmModal(allStudents);
-    }
-  } catch (e) { showError(e.message); }
-  showLoading(false);
-};
-
-// init extra sheets list เมื่อเปิด tab
-const _origShowAdminTab = showAdminTab;
-showAdminTab = function(tab, btn) {
-  _origShowAdminTab(tab, btn);
-  if (tab === 'addsheets') renderExtraSheets();
-};
-
-// แปลงชื่อห้องใน admin selects ด้วย
-const _origPopulateAdmin = populateAdminSelects;
-populateAdminSelects = function() {
-  _origPopulateAdmin();
-  // อัปเดต label ใน select ต่างๆ ให้แสดง 3/1 แทน 301
-  ['statsSheetSelect','missingSheetSelect','hideSheetSelect'].forEach(id => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    Array.from(sel.options).forEach(opt => {
-      if (opt.value) opt.textContent = opt.textContent.replace(/(\d)(\d{2})(\s|$)/, (m,a,b,c) => a+'/'+parseInt(b)+c);
-    });
-  });
-};
-</script>
-<script>
-// ===== PATCH v4: Skeleton + Debounce + Cache Clear =====
-
-// Skeleton Screen
-function showSkeleton(v) {
-  const sk = document.getElementById('skeletonBox');
-  const ld = document.getElementById('loadingBox');
-  if (v) {
-    sk.style.display = 'block';
-    ld.style.display = 'none';
-  } else {
-    sk.style.display = 'none';
-  }
-}
-
-// Override showLoading ให้ใช้ Skeleton แทน spinner
-const _origShowLoading = showLoading;
-showLoading = function(v) {
-  showSkeleton(v);
-  // spinner ซ่อนไว้ ใช้ skeleton แทน
-  document.getElementById('loadingBox').style.display = 'none';
-};
-
-// Debounce Search — รอ 500ms หลังหยุดพิมพ์
-let debounceTimer = null;
-document.addEventListener('DOMContentLoaded', () => {
-  const input = document.getElementById('searchInput');
-  if (input) {
-    // ลบ onkeydown เดิมออก แล้วใช้ debounce แทน
-    input.removeAttribute('onkeydown');
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        clearTimeout(debounceTimer);
-        doSearch();
-      }
-    });
-    input.addEventListener('input', () => {
-      clearTimeout(debounceTimer);
-      const val = input.value.trim();
-      if (val.length >= 4) { // เริ่มค้นหาเมื่อพิมพ์ครบ 4 ตัว
-        debounceTimer = setTimeout(() => doSearch(), 500);
-      }
-    });
-  }
-});
-
-// Admin: ปุ่ม Clear Cache ทั้งหมด
-async function adminClearCache() {
-  try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=clearCache');
-    const data = await res.json();
-    // clear local cache ด้วย
-    Object.keys(localStorage).filter(k => k.startsWith('art_c_')).forEach(k => localStorage.removeItem(k));
-    showToast(data.success ? '🗑️ ล้าง Cache ทั้งหมดแล้ว ข้อมูลจะอัปเดตทันที' : '⚠️ ' + data.error);
-  } catch(e) {
-    showToast('⚠️ ' + e.message);
-  }
-}
-</script>
