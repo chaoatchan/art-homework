@@ -445,10 +445,11 @@ body{font-family:'Prompt',sans-serif;background:var(--pink-50);min-height:100vh;
 <div class="modal-overlay" id="confirmModal">
   <div class="modal">
     <div class="modal-avatar" id="modalAvatar">👤</div>
-    <div class="modal-title">พบข้อมูลนักเรียน — ยืนยันตัวตน</div>
+    <div class="modal-title" id="modalTitle">พบข้อมูลนักเรียน — ยืนยันตัวตน</div>
     <div class="modal-name" id="modalName">-</div>
     <div class="modal-meta" id="modalMeta">-</div>
-    <div class="modal-btns">
+    <div id="subjectPicker" style="display:none;margin-bottom:16px"></div>
+    <div class="modal-btns" id="modalBtns">
       <button class="btn-cancel" onclick="closeModal()">ไม่ใช่ฉัน</button>
       <button class="btn-confirm" onclick="confirmStudent()">ใช่ เข้าดูผล →</button>
     </div>
@@ -1104,3 +1105,213 @@ function showToast(msg) { const t=document.getElementById('toast'); t.textConten
 </script>
 </body>
 </html>
+<script>
+// ===== PATCH v5: Smart Sheet Parsing + Multi-subject Modal + Alias + Cleanup =====
+
+// Override showConfirmModal
+showConfirmModal = function(students) {
+  pendingStudents = students;
+  pendingIndex = 0;
+  const s = students[0];
+
+  document.getElementById('modalAvatar').textContent = getAvatar(s.prefix);
+  document.getElementById('modalName').textContent = s.name || '-';
+  document.getElementById('modalTitle').textContent = 'พบข้อมูลนักเรียน — ยืนยันตัวตน';
+
+  // Group by student id — เช็คว่ามีหลายวิชาไหม
+  const sameId = students.filter(x => x.id === s.id);
+
+  if (sameId.length > 1) {
+    // มีหลายวิชา → แสดง subject picker
+    document.getElementById('modalMeta').textContent = 'รหัส: ' + s.id;
+    document.getElementById('modalBtns').style.display = 'none';
+    const picker = document.getElementById('subjectPicker');
+    picker.style.display = 'block';
+    picker.innerHTML = '<div style="font-size:.82rem;color:var(--gray-500);margin-bottom:10px;font-weight:600">เลือกวิชาที่ต้องการดู</div>' +
+      sameId.map((st, i) => {
+        const display = st.displaySheet || formatClass(st.sheet);
+        const subjectIcon = getSubjectIcon(st.subject || '');
+        return '<button onclick="confirmByIndex(' + students.indexOf(st) + ')" style="width:100%;padding:12px 16px;margin-bottom:8px;background:var(--pink-50);border:2px solid var(--pink-200);border-radius:var(--r-sm);font-family:Prompt,sans-serif;font-size:.92rem;font-weight:600;color:var(--pink-600);cursor:pointer;text-align:left;transition:all .15s" onmouseover="this.style.borderColor=\'var(--pink-400)\';this.style.background=\'white\'" onmouseout="this.style.borderColor=\'var(--pink-200)\';this.style.background=\'var(--pink-50)\'">' + subjectIcon + ' ' + esc(display) + '</button>';
+      }).join('') +
+      '<button onclick="closeModal()" style="width:100%;padding:10px;background:var(--gray-100);border:none;border-radius:var(--r-sm);font-family:Prompt,sans-serif;font-size:.88rem;color:var(--gray-600);cursor:pointer;margin-top:4px">ไม่ใช่ฉัน</button>';
+  } else {
+    // วิชาเดียว → แสดงปกติ
+    const display = s.displaySheet || formatClass(s.sheet);
+    document.getElementById('modalMeta').textContent = 'รหัส: ' + s.id + '  ·  ' + display;
+    document.getElementById('subjectPicker').style.display = 'none';
+    document.getElementById('modalBtns').style.display = 'flex';
+  }
+
+  document.getElementById('confirmModal').classList.add('show');
+};
+
+function confirmByIndex(idx) {
+  closeModal();
+  currentStudent = pendingStudents[idx];
+  renderStudent(currentStudent);
+}
+
+// Override confirmStudent
+confirmStudent = function() {
+  closeModal();
+  currentStudent = pendingStudents[pendingIndex];
+  renderStudent(currentStudent);
+};
+
+// Override renderStudent ให้แสดง displaySheet แทน sheet
+const _origRenderStudent = renderStudent;
+renderStudent = function(s) {
+  _origRenderStudent(s);
+  // override ชื่อห้องให้ใช้ displaySheet
+  const display = s.displaySheet || formatClass(s.sheet);
+  document.getElementById('stuClass').textContent = '📍 ' + display;
+};
+
+// Subject icon helper
+function getSubjectIcon(subject) {
+  if (!subject) return '🎨';
+  if (/แนะแนว/.test(subject)) return '📚';
+  if (/ดนตรี/.test(subject)) return '🎵';
+  if (/พลศึกษา|พละ/.test(subject)) return '⚽';
+  if (/วิทย์|วิทยา/.test(subject)) return '🔬';
+  if (/คณิต/.test(subject)) return '📐';
+  if (/ภาษา|อังกฤษ/.test(subject)) return '📖';
+  return '📝';
+}
+
+// ===== PATCH: Admin — แก้ชื่อกลุ่มวิชา (Alias) =====
+
+// เพิ่ม Tab ใหม่ใน Admin
+document.addEventListener('DOMContentLoaded', () => {
+  const tabs = document.querySelector('.admin-tabs');
+  if (tabs) {
+    // เพิ่มปุ่ม alias tab
+    const btn = document.createElement('button');
+    btn.className = 'atab';
+    btn.textContent = '🏷️ ชื่อกลุ่มวิชา';
+    btn.onclick = function() { showAdminTab('alias', this); };
+    tabs.appendChild(btn);
+
+    // เพิ่ม content
+    const panel = document.getElementById('adminPanel');
+    if (panel) {
+      const div = document.createElement('div');
+      div.className = 'atab-content';
+      div.id = 'atab-alias';
+      div.innerHTML = '<p style="font-size:.85rem;color:var(--gray-500);margin-bottom:12px">ตั้งชื่อแสดงผลของแต่ละห้อง/วิชาได้เอง เช่น "301บลาๆ" → "3/1 · ศิลปะ"</p>' +
+        '<div class="config-list" id="aliasList"></div>' +
+        '<button class="btn-save" onclick="saveAliases()">💾 บันทึกชื่อกลุ่มวิชา</button>' +
+        '<button class="btn-save gray" style="margin-top:6px" onclick="runCleanup()">🗑️ ลบข้อมูล Sheet ที่ไม่มีแล้ว (Cleanup)</button>';
+      panel.querySelector('.admin-panel > div:last-child') || panel.appendChild(div);
+      // append ก่อน toast
+      document.getElementById('adminPanel').appendChild(div);
+    }
+  }
+});
+
+// Render alias list
+function renderAliasList() {
+  const el = document.getElementById('aliasList');
+  if (!el || !sheetsInfo.length) return;
+  const aliases = getLS('art_aliases', {});
+  el.innerHTML = sheetsInfo.map(s => {
+    const defaultDisplay = s.displayName || formatClass(s.sheetName);
+    return '<div class="config-row">' +
+      '<span class="config-orig" title="' + esc(s.sheetName) + '" style="width:130px">' + esc(s.sheetName) + '</span>' +
+      '<span style="font-size:.72rem;color:var(--gray-400);width:80px;flex-shrink:0">→ ปัจจุบัน: ' + esc(defaultDisplay) + '</span>' +
+      '<input class="config-input alias-input" placeholder="ชื่อที่อยากแสดง (ว่าง = ใช้ค่าปกติ)" value="' + esc(aliases[s.sheetName]||'') + '" data-sheet="' + esc(s.sheetName) + '">' +
+      '</div>';
+  }).join('');
+}
+
+async function saveAliases() {
+  const aliases = {};
+  document.querySelectorAll('.alias-input').forEach(inp => {
+    const v = inp.value.trim(), sheet = inp.getAttribute('data-sheet');
+    if (v) aliases[sheet] = v;
+  });
+  // บันทึกใน localStorage
+  localStorage.setItem('art_aliases', JSON.stringify(aliases));
+
+  // บันทึกใน Apps Script ทีละ sheet
+  let ok = true;
+  for (const [sheetName, alias] of Object.entries(aliases)) {
+    try {
+      await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ action:'saveAlias', sheetName, alias }) });
+    } catch(e) { ok = false; }
+  }
+  // ล้าง alias ที่ถูกลบออก (ว่าง)
+  if (sheetsInfo.length) {
+    for (const s of sheetsInfo) {
+      if (!aliases[s.sheetName]) {
+        try {
+          await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ action:'saveAlias', sheetName: s.sheetName, alias: '' }) });
+        } catch(e) {}
+      }
+    }
+  }
+  showToast(ok ? '✅ บันทึกชื่อกลุ่มวิชาแล้ว' : '⚠️ บางรายการอาจไม่ได้บันทึก');
+}
+
+// Cleanup
+async function runCleanup() {
+  showToast('⏳ กำลัง Cleanup...');
+  try {
+    const r = await api({ action:'cleanup' });
+    if (r.success) {
+      const removed = r.removedSheets || [];
+      // ล้าง local cache ด้วย
+      Object.keys(localStorage).filter(k=>k.startsWith('art_c_')).forEach(k=>localStorage.removeItem(k));
+      showToast(removed.length > 0 ? '🗑️ ลบข้อมูลเก่า ' + removed.length + ' ห้องแล้ว' : '✅ ไม่มีข้อมูลเก่าให้ลบ');
+    }
+  } catch(e) { showToast('⚠️ ' + e.message); }
+}
+
+// Override showAdminTab เพื่อ render alias list
+const _origShowAdminTab = showAdminTab;
+showAdminTab = function(tab, btn) {
+  _origShowAdminTab(tab, btn);
+  if (tab === 'alias') {
+    renderAliasList();
+    const content = document.getElementById('atab-alias');
+    if (content) content.classList.add('active');
+  }
+};
+
+// Override populateAdminSelects ให้แสดง displayName
+const _orig2 = populateAdminSelects;
+populateAdminSelects = function() {
+  _orig2();
+  ['heatmapSheetSelect','missingSheetSelect','hideSheetSelect'].forEach(id => {
+    const sel = document.getElementById(id); if (!sel) return;
+    sel.innerHTML = '<option value="">-- เลือกห้องเรียน --</option>';
+    sheetsInfo.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.sheetName;
+      opt.textContent = (s.displayName || formatClass(s.sheetName)) + ' (' + s.studentCount + ' คน)';
+      sel.appendChild(opt);
+    });
+  });
+};
+
+// Overview ใช้ displayName
+const _origRenderOverview = renderOverview;
+renderOverview = async function() {
+  const grid = document.getElementById('overviewGrid');
+  grid.innerHTML = '<div style="color:var(--gray-400);font-size:.85rem">กำลังโหลด...</div>';
+  const statsAll = [];
+  for (const s of sheetsInfo) {
+    try { const d = await api({ action:'classStats', sheet: s.sheetName }); if (d.success) statsAll.push(d); } catch(e) {}
+  }
+  grid.innerHTML = statsAll.map(d => {
+    const pct = d.totalStudents > 0 ? Math.round(d.fullSubmit/d.totalStudents*100) : 0;
+    const cls = pct>=80?'high':pct>=50?'mid':'low';
+    const display = d.displayName || formatClass(d.sheetName);
+    return '<div class="overview-card" onclick="drillDownHeatmap(\'' + d.sheetName + '\')">' +
+      '<div class="ov-class" style="font-size:.9rem">' + esc(display) + '</div>' +
+      '<div class="ov-pct ' + cls + '">' + pct + '%</div>' +
+      '<div class="ov-sub">ส่งครบ ' + d.fullSubmit + '/' + d.totalStudents + ' คน</div>' +
+      '<div class="ov-bar"><div class="ov-bar-fill" style="width:' + pct + '%"></div></div></div>';
+  }).join('');
+};
+</script>
